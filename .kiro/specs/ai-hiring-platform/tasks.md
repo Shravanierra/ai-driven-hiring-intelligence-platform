@@ -64,14 +64,14 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
 - [x] 4. Checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Fit Scoring Service
-  - [ ] 5.1 Implement FitScoringModule with embedding-based scoring
+- [x] 5. Fit Scoring Service
+  - [x] 5.1 Implement FitScoringModule with embedding-based scoring
     - Implement `POST /jobs/{job_id}/candidates/{candidate_id}/score`: generate embeddings for candidate profile and screening criteria via OpenAI `text-embedding-ada-002`; compute cosine similarity; produce score (0–100) and breakdown array (one entry per criterion with status met/partial/not_met, contribution, explanation)
     - Implement `GET /jobs/{job_id}/candidates/{candidate_id}/score` to retrieve FitScore
     - Store criteria_version on FitScore to track which criteria version was used
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 5.2 Implement bulk rescore on criteria update
+  - [x] 5.2 Implement bulk rescore on criteria update
     - Implement `POST /jobs/{job_id}/rescore`: recompute FitScores for all candidates under the job; complete within 60 seconds; mark failed records with status="error" rather than aborting the batch
     - Increment ScreeningCriteria.version on each PUT /criteria save; trigger rescore automatically
     - _Requirements: 3.4_
@@ -92,14 +92,14 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Property 9: Score Consistency Within Tolerance**
     - **Validates: Requirements 3.5**
 
-- [ ] 6. Shortlist Engine
-  - [ ] 6.1 Implement ShortlistModule with ranking and reasoning
+- [x] 6. Shortlist Engine
+  - [x] 6.1 Implement ShortlistModule with ranking and reasoning
     - Implement `POST /jobs/{job_id}/shortlist` accepting `{ size: number, filters?: object }`: rank candidates by FitScore descending; apply filters (min experience, required skill); call LLM to generate per-candidate reasoning string; persist ShortlistEntry records with rank and reasoning
     - Implement `GET /jobs/{job_id}/shortlist` to retrieve current shortlist
     - Enforce size between 1 and 50; return at most N entries
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 6.2 Implement shortlist decision persistence
+  - [x] 6.2 Implement shortlist decision persistence
     - Implement `PATCH /jobs/{job_id}/shortlist/{candidate_id}` accepting `{ decision: "accepted" | "rejected" | "deferred" }`; persist decision and decided_at timestamp
     - _Requirements: 4.5_
 
