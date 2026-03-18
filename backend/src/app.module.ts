@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './database/typeorm.config';
 import { LlmModule } from './llm/llm.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LlmModule } from './llm/llm.module';
     }),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     LlmModule,
+    JobsModule,
   ],
 })
 export class AppModule {}

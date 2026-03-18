@@ -16,13 +16,13 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
   - _Requirements: 1.1, 2.1, 3.1, 8.1_
 
 - [ ] 2. Job Description Ingestion and Screening Criteria
-  - [ ] 2.1 Implement JobsModule with file upload, parsing, and persistence
+  - [x] 2.1 Implement JobsModule with file upload, parsing, and persistence
     - Create `POST /jobs` endpoint accepting PDF/DOCX/plain-text via multipart upload; use pdf-parse and mammoth for extraction; store raw_text and file_url (MinIO); set status to pending→parsed or error
     - Implement `GET /jobs/{job_id}` to retrieve a JobDescription record
     - Return HTTP 422 with `{ error: "unsupported_format" | "parse_failure", detail: "..." }` for bad files
     - _Requirements: 1.1, 1.4_
 
-  - [ ] 2.2 Implement Screening Criteria generation and CRUD
+  - [x] 2.2 Implement Screening Criteria generation and CRUD
     - On successful JD parse, call LLM (GPT-4o) to extract required_skills, preferred_skills, experience_level, responsibilities, and custom_criteria; persist as ScreeningCriteria with version=1
     - Implement `PUT /jobs/{job_id}/criteria` and `GET /jobs/{job_id}/criteria` endpoints
     - _Requirements: 1.2, 1.3, 1.5_

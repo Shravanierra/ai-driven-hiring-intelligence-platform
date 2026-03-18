@@ -6,27 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.JobsModule = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_config_1 = require("./database/typeorm.config");
-const llm_module_1 = require("./llm/llm.module");
-const jobs_module_1 = require("./jobs/jobs.module");
-let AppModule = class AppModule {
+const job_description_entity_1 = require("../entities/job-description.entity");
+const screening_criteria_entity_1 = require("../entities/screening-criteria.entity");
+const jobs_controller_1 = require("./jobs.controller");
+const jobs_service_1 = require("./jobs.service");
+let JobsModule = class JobsModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.JobsModule = JobsModule;
+exports.JobsModule = JobsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfig),
-            llm_module_1.LlmModule,
-            jobs_module_1.JobsModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([job_description_entity_1.JobDescription, screening_criteria_entity_1.ScreeningCriteria])],
+        controllers: [jobs_controller_1.JobsController],
+        providers: [jobs_service_1.JobsService],
+        exports: [jobs_service_1.JobsService],
     })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+], JobsModule);
+//# sourceMappingURL=jobs.module.js.map
