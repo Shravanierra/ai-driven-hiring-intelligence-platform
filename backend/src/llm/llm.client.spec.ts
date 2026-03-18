@@ -90,9 +90,9 @@ describe('LlmClient', () => {
 
   // Feature: ai-hiring-platform, Property N: LLM retry exhaustion always produces AiServiceUnavailableError
   describe('property: retry exhaustion always throws AiServiceUnavailableError', () => {
-    it('always throws AiServiceUnavailableError regardless of underlying error message', () => {
-      fc.assert(
-        fc.property(fc.string({ minLength: 1, maxLength: 200 }), async (errorMsg) => {
+    it('always throws AiServiceUnavailableError regardless of underlying error message', async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.string({ minLength: 1, maxLength: 200 }), async (errorMsg) => {
           const client = new LlmClient(makeConfig({ OPENAI_API_KEY: 'test-key' }));
           (client as any).sleep = () => Promise.resolve();
           (client as any).openai = {

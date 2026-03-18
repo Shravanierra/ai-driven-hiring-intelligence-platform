@@ -36,16 +36,16 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Validates: Requirements 1.5**
 
 - [ ] 3. Resume Ingestion and Candidate Profile Extraction
-  - [ ] 3.1 Implement ResumesModule with batch upload and parsing
+  - [x] 3.1 Implement ResumesModule with batch upload and parsing
     - Create `POST /jobs/{job_id}/resumes` accepting multipart batch (up to 500 files); parse each with pdf-parse/mammoth; on parse failure set parse_status="error" and continue; return `{ profiles: [...], failures: [...] }`
     - Implement `GET /jobs/{job_id}/candidates` and `GET /candidates/{candidate_id}` endpoints
     - _Requirements: 2.1, 2.3, 2.4, 2.6_
 
-  - [ ] 3.2 Implement Skill_Extractor with canonical normalization
+  - [x] 3.2 Implement Skill_Extractor with canonical normalization
     - Call LLM to extract skills from resume text; build a canonical skill map (e.g., "K8s" → "Kubernetes"); store skills array with canonical_name and raw_aliases on CandidateProfile
     - _Requirements: 2.2_
 
-  - [ ] 3.3 Implement Summary_Generator for candidate profiles
+  - [x] 3.3 Implement Summary_Generator for candidate profiles
     - After profile extraction, call LLM to generate a human-readable summary; store in CandidateProfile.summary; ensure summary is non-empty
     - _Requirements: 2.5_
 
@@ -61,7 +61,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Property 5: Summary Generated for Every Profile**
     - **Validates: Requirements 2.5**
 
-- [ ] 4. Checkpoint — Ensure all tests pass
+- [x] 4. Checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Fit Scoring Service
