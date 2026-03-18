@@ -15,6 +15,7 @@ import { JobsService } from './jobs.service';
 import { JobDescription } from '../entities/job-description.entity';
 import { ScreeningCriteria } from '../entities/screening-criteria.entity';
 import { LlmClient } from '../llm/llm.client';
+import { ScoringService } from '../scoring/scoring.service';
 import { arbitraryJobDescriptionText, arbitraryScreeningCriteria } from '../testing/arbitraries';
 
 // Minimal mock for Minio.Client
@@ -82,6 +83,7 @@ describe('JobsService PBT', () => {
         { provide: getRepositoryToken(ScreeningCriteria), useValue: criteriaRepo },
         { provide: LlmClient, useValue: llm },
         { provide: ConfigService, useFactory: mockConfig },
+        { provide: ScoringService, useValue: { rescoreAll: jest.fn().mockResolvedValue({ rescored: 0, failed: 0, errors: [] }) } },
       ],
     }).compile();
 

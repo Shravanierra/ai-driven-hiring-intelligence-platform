@@ -5,6 +5,8 @@ import { typeOrmConfig } from './database/typeorm.config';
 import { LlmModule } from './llm/llm.module';
 import { JobsModule } from './jobs/jobs.module';
 import { ResumesModule } from './resumes/resumes.module';
+import { ScoringModule } from './scoring/scoring.module';
+import { ShortlistModule } from './shortlist/shortlist.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ResumesModule } from './resumes/resumes.module';
     LlmModule,
     JobsModule,
     ResumesModule,
+    ScoringModule,
+    ShortlistModule,
   ],
 })
 export class AppModule {}

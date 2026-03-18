@@ -18,6 +18,7 @@ import {
   ScreeningCriteria,
 } from '../entities/screening-criteria.entity';
 import { LlmClient } from '../llm/llm.client';
+import { ScoringService } from '../scoring/scoring.service';
 
 const SUPPORTED_MIME_TYPES = [
   'application/pdf',
@@ -46,6 +47,7 @@ export class JobsService {
     private readonly criteriaRepo: Repository<ScreeningCriteria>,
     private readonly llmClient: LlmClient,
     private readonly config: ConfigService,
+    private readonly scoringService: ScoringService,
   ) {
     this.minioClient = new Minio.Client({
       endPoint: this.config.get<string>('MINIO_ENDPOINT', 'localhost'),
@@ -161,6 +163,8 @@ export class JobsService {
       order: { version: 'DESC' },
     });
 
+    let saved: ScreeningCriteria;
+
     if (existing) {
       // Update in place with incremented version
       existing.version = existing.version + 1;
@@ -174,20 +178,29 @@ export class JobsService {
         existing.responsibilities = dto.responsibilities;
       if (dto.custom_criteria !== undefined)
         existing.customCriteria = dto.custom_criteria;
-      return this.criteriaRepo.save(existing);
+      saved = await this.criteriaRepo.save(existing);
+    } else {
+      // No existing criteria — create fresh
+      const criteria = this.criteriaRepo.create({
+        jobId,
+        version: 1,
+        requiredSkills: dto.required_skills ?? [],
+        preferredSkills: dto.preferred_skills ?? [],
+        experienceLevel: dto.experience_level ?? 'mid',
+        responsibilities: dto.responsibilities ?? [],
+        customCriteria: dto.custom_criteria ?? [],
+      });
+      saved = await this.criteriaRepo.save(criteria);
     }
 
-    // No existing criteria — create fresh
-    const criteria = this.criteriaRepo.create({
-      jobId,
-      version: 1,
-      requiredSkills: dto.required_skills ?? [],
-      preferredSkills: dto.preferred_skills ?? [],
-      experienceLevel: dto.experience_level ?? 'mid',
-      responsibilities: dto.responsibilities ?? [],
-      customCriteria: dto.custom_criteria ?? [],
-    });
-    return this.criteriaRepo.save(criteria);
+    // Fire-and-forget rescore for all candidates under this job
+    this.scoringService
+      .rescoreAll(jobId)
+      .catch((err: Error) =>
+        this.logger.error(`Auto-rescore failed for job ${jobId}: ${err.message}`),
+      );
+
+    return saved;
   }
 
   private async generateCriteria(

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 export type CriterionStatus = 'met' | 'partial' | 'not_met';
+export type FitScoreStatus = 'ok' | 'error';
 
 export interface ScoreBreakdownItem {
   criterion_label: string;
@@ -35,6 +36,9 @@ export class FitScore {
 
   @Column({ type: 'jsonb', default: '[]' })
   breakdown: ScoreBreakdownItem[];
+
+  @Column({ type: 'varchar', length: 10, default: 'ok' })
+  status: FitScoreStatus;
 
   @CreateDateColumn({ name: 'computed_at', type: 'timestamptz' })
   computedAt: Date;

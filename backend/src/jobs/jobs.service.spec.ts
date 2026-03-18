@@ -9,6 +9,7 @@ import { JobsService } from './jobs.service';
 import { JobDescription } from '../entities/job-description.entity';
 import { ScreeningCriteria } from '../entities/screening-criteria.entity';
 import { LlmClient } from '../llm/llm.client';
+import { ScoringService } from '../scoring/scoring.service';
 
 // Minimal mock for Minio.Client
 jest.mock('minio', () => ({
@@ -43,6 +44,10 @@ const mockConfig = () => ({
 
 const mockLlmClient = () => ({
   createChatCompletion: jest.fn(),
+});
+
+const mockScoringService = () => ({
+  rescoreAll: jest.fn().mockResolvedValue({ rescored: 0, failed: 0, errors: [] }),
 });
 
 function makeFile(
@@ -81,6 +86,7 @@ describe('JobsService', () => {
         },
         { provide: LlmClient, useFactory: mockLlmClient },
         { provide: ConfigService, useFactory: mockConfig },
+        { provide: ScoringService, useFactory: mockScoringService },
       ],
     }).compile();
 
