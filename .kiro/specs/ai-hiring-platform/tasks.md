@@ -123,7 +123,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 8. Bias Detection Service
-  - [ ] 8.1 Implement BiasDetectionModule as post-processing step
+  - [x] 8.1 Implement BiasDetectionModule as post-processing step
     - Implement `GET /jobs/{job_id}/candidates/{candidate_id}/bias`: analyze FitScore breakdown for demographic proxy signals (institution names, graduation years, name patterns); return array of BiasFlag records with signal_type, description, affected_criterion, severity
     - Implement `GET /jobs/{job_id}/bias-report`: aggregate BiasFlags across all candidates; return score distribution and flagged signals summary
     - Ensure bias detection never uses name, gender, age, nationality, or ethnicity as scoring inputs
@@ -138,7 +138,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Validates: Requirements 5.4**
 
 - [ ] 9. Conversational Assistant Service
-  - [ ] 9.1 Implement AssistantModule with LangChain.js session management
+  - [x] 9.1 Implement AssistantModule with LangChain.js session management
     - Implement `POST /assistant/sessions` to create a new AssistantSession (stored in Redis for active state, persisted to PostgreSQL)
     - Implement `POST /assistant/sessions/{id}/query`: use LangChain.js with session-scoped context window; interpret natural language query; retrieve matching candidates via pgvector similarity search; return ranked results ordered by FitScore descending with interpretation string; complete within 5 seconds
     - Implement `GET /assistant/sessions/{id}` to retrieve full session turn history

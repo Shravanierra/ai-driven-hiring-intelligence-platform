@@ -7,6 +7,8 @@ import { JobsModule } from './jobs/jobs.module';
 import { ResumesModule } from './resumes/resumes.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { ShortlistModule } from './shortlist/shortlist.module';
+import { BiasModule } from './bias/bias.module';
+import { AssistantModule } from './assistant/assistant.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { ShortlistModule } from './shortlist/shortlist.module';
     ResumesModule,
     ScoringModule,
     ShortlistModule,
+    BiasModule,
+    AssistantModule,
   ],
 })
 export class AppModule {}
