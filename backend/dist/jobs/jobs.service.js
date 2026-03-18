@@ -39,7 +39,7 @@ let JobsService = JobsService_1 = class JobsService {
         this.logger = new common_1.Logger(JobsService_1.name);
         this.minioClient = new Minio.Client({
             endPoint: this.config.get('MINIO_ENDPOINT', 'localhost'),
-            port: this.config.get('MINIO_PORT', 9000),
+            port: Number(this.config.get('MINIO_PORT', '9000')),
             useSSL: this.config.get('MINIO_USE_SSL', 'false') === 'true',
             accessKey: this.config.get('MINIO_ACCESS_KEY', 'minioadmin'),
             secretKey: this.config.get('MINIO_SECRET_KEY', 'minioadmin_secret'),
@@ -221,7 +221,7 @@ Rules:
         const objectName = `jobs/${(0, uuid_1.v4)()}-${file.originalname}`;
         await this.minioClient.putObject(this.bucket, objectName, file.buffer, file.size, { 'Content-Type': file.mimetype });
         const endpoint = this.config.get('MINIO_ENDPOINT', 'localhost');
-        const port = this.config.get('MINIO_PORT', 9000);
+        const port = Number(this.config.get('MINIO_PORT', '9000'));
         return `http://${endpoint}:${port}/${this.bucket}/${objectName}`;
     }
     async ensureBucketExists() {

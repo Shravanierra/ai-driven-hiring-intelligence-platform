@@ -38,4 +38,5 @@ export declare const arbitraryFitScore: () => fc.Arbitrary<FitScore>;
 export declare const arbitraryShortlistEntry: () => fc.Arbitrary<ShortlistEntry>;
 export declare const arbInterviewQuestion: () => fc.Arbitrary<InterviewQuestion>;
 export declare const arbitraryInterviewKit: () => fc.Arbitrary<InterviewKit>;
+export declare const arbitraryJobDescriptionText: () => fc.Arbitrary<string>;
 export declare const arbitraryOrderedShortlist: (maxSize?: number) => fc.Arbitrary<ShortlistEntry[]>;

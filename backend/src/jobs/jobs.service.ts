@@ -49,7 +49,7 @@ export class JobsService {
   ) {
     this.minioClient = new Minio.Client({
       endPoint: this.config.get<string>('MINIO_ENDPOINT', 'localhost'),
-      port: this.config.get<number>('MINIO_PORT', 9000),
+      port: Number(this.config.get<string>('MINIO_PORT', '9000')),
       useSSL: this.config.get<string>('MINIO_USE_SSL', 'false') === 'true',
       accessKey: this.config.get<string>('MINIO_ACCESS_KEY', 'minioadmin'),
       secretKey: this.config.get<string>('MINIO_SECRET_KEY', 'minioadmin_secret'),
@@ -298,7 +298,7 @@ Rules:
       { 'Content-Type': file.mimetype },
     );
     const endpoint = this.config.get<string>('MINIO_ENDPOINT', 'localhost');
-    const port = this.config.get<number>('MINIO_PORT', 9000);
+    const port = Number(this.config.get<string>('MINIO_PORT', '9000'));
     return `http://${endpoint}:${port}/${this.bucket}/${objectName}`;
   }
 

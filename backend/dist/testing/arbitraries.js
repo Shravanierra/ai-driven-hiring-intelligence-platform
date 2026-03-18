@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arbitraryOrderedShortlist = exports.arbitraryInterviewKit = exports.arbInterviewQuestion = exports.arbitraryShortlistEntry = exports.arbitraryFitScore = exports.arbBreakdownItem = exports.arbitraryScreeningCriteria = exports.arbCustomCriterion = exports.arbitraryCandidateProfile = exports.arbSkill = exports.arbEducation = exports.arbWorkExperience = exports.arbContact = exports.arbYearMonth = exports.arbIsoDate = exports.arbNonEmptyString = exports.arbUuid = void 0;
+exports.arbitraryOrderedShortlist = exports.arbitraryJobDescriptionText = exports.arbitraryInterviewKit = exports.arbInterviewQuestion = exports.arbitraryShortlistEntry = exports.arbitraryFitScore = exports.arbBreakdownItem = exports.arbitraryScreeningCriteria = exports.arbCustomCriterion = exports.arbitraryCandidateProfile = exports.arbSkill = exports.arbEducation = exports.arbWorkExperience = exports.arbContact = exports.arbYearMonth = exports.arbIsoDate = exports.arbNonEmptyString = exports.arbUuid = void 0;
 const fc = require("fast-check");
 const candidate_profile_entity_1 = require("../entities/candidate-profile.entity");
 const screening_criteria_entity_1 = require("../entities/screening-criteria.entity");
@@ -165,6 +165,8 @@ const arbitraryInterviewKit = () => fc
     return kit;
 });
 exports.arbitraryInterviewKit = arbitraryInterviewKit;
+const arbitraryJobDescriptionText = () => fc.string({ minLength: 1, maxLength: 2000 });
+exports.arbitraryJobDescriptionText = arbitraryJobDescriptionText;
 const arbitraryOrderedShortlist = (maxSize = 50) => fc
     .tuple((0, exports.arbUuid)(), fc.array(fc.record({
     candidateId: (0, exports.arbUuid)(),

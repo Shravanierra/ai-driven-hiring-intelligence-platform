@@ -213,6 +213,15 @@ export const arbitraryInterviewKit = (): fc.Arbitrary<InterviewKit> =>
       return kit;
     });
 
+// ─── JobDescription text ──────────────────────────────────────────────────────
+
+/**
+ * Generates arbitrary non-empty job description raw text strings.
+ * Used for Property 1: JD Parsing Produces Complete Screening Criteria.
+ */
+export const arbitraryJobDescriptionText = (): fc.Arbitrary<string> =>
+  fc.string({ minLength: 1, maxLength: 2000 });
+
 // ─── Shortlist (ordered array) ────────────────────────────────────────────────
 
 /**

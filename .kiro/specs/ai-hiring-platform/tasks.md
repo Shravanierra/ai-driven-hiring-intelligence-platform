@@ -27,11 +27,11 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - Implement `PUT /jobs/{job_id}/criteria` and `GET /jobs/{job_id}/criteria` endpoints
     - _Requirements: 1.2, 1.3, 1.5_
 
-  - [ ]* 2.3 Write property test for JD parsing produces complete screening criteria
+  - [x] 2.3 Write property test for JD parsing produces complete screening criteria
     - **Property 1: JD Parsing Produces Complete Screening Criteria**
     - **Validates: Requirements 1.2**
 
-  - [ ]* 2.4 Write property test for criteria save-retrieve round trip
+  - [x] 2.4 Write property test for criteria save-retrieve round trip
     - **Property 2: Criteria Save-Retrieve Round Trip**
     - **Validates: Requirements 1.5**
 
