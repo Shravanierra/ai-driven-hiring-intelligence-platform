@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BiasFlag, BiasSeverity } from '../entities/bias-flag.entity';
@@ -69,8 +69,8 @@ export class BiasService {
     private readonly jobRepo: Repository<JobDescription>,
   ) {}
 
-  async getBiasFlags(jobId: string, candidateId: string): Promise<BiasFlag[]> {
-    await this.validateJobAndCandidate(jobId, candidateId);
+  async getBiasFlags(jobId: string, candidateId: string, recruiterId?: string): Promise<BiasFlag[]> {
+    await this.validateJobAndCandidate(jobId, candidateId, recruiterId);
 
     const fitScore = await this.fitScoreRepo.findOne({ where: { candidateId, jobId } });
     if (!fitScore) {
@@ -107,10 +107,13 @@ export class BiasService {
     return this.biasFlagRepo.save(flags);
   }
 
-  async getBiasReport(jobId: string): Promise<BiasReport> {
+  async getBiasReport(jobId: string, recruiterId?: string): Promise<BiasReport> {
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    }
+    if (recruiterId && job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
     }
 
     const profiles = await this.profileRepo.find({ where: { jobId } });
@@ -337,10 +340,13 @@ export class BiasService {
     return s === 'high' ? 3 : s === 'medium' ? 2 : 1;
   }
 
-  private async validateJobAndCandidate(jobId: string, candidateId: string): Promise<void> {
+  private async validateJobAndCandidate(jobId: string, candidateId: string, recruiterId?: string): Promise<void> {
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    }
+    if (recruiterId && job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
     }
 
     const profile = await this.profileRepo.findOne({ where: { id: candidateId } });

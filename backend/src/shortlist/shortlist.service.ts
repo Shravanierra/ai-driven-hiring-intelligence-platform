@@ -3,12 +3,14 @@ import {
   Logger,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortlistEntry, ShortlistDecision } from '../entities/shortlist-entry.entity';
 import { FitScore } from '../entities/fit-score.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
+import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
 
 export interface ShortlistFilters {
@@ -27,6 +29,8 @@ export class ShortlistService {
     private readonly fitScoreRepo: Repository<FitScore>,
     @InjectRepository(CandidateProfile)
     private readonly profileRepo: Repository<CandidateProfile>,
+    @InjectRepository(JobDescription)
+    private readonly jobRepo: Repository<JobDescription>,
     private readonly llmClient: LlmClient,
   ) {}
 
@@ -34,7 +38,17 @@ export class ShortlistService {
     jobId: string,
     size: number,
     filters?: ShortlistFilters,
+    recruiterId?: string,
   ): Promise<ShortlistEntry[]> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     if (size < 1 || size > 50) {
       throw new BadRequestException('size must be between 1 and 50');
     }
@@ -109,7 +123,16 @@ export class ShortlistService {
     return entries.sort((a, b) => a.rank - b.rank);
   }
 
-  async getShortlist(jobId: string): Promise<ShortlistEntry[]> {
+  async getShortlist(jobId: string, recruiterId?: string): Promise<ShortlistEntry[]> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     return this.shortlistRepo.find({
       where: { jobId },
       order: { rank: 'ASC' },
@@ -120,7 +143,17 @@ export class ShortlistService {
     jobId: string,
     candidateId: string,
     decision: ShortlistDecision,
+    recruiterId?: string,
   ): Promise<ShortlistEntry> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const entry = await this.shortlistRepo.findOne({ where: { jobId, candidateId } });
     if (!entry) {
       throw new NotFoundException(

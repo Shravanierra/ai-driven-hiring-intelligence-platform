@@ -11,6 +11,8 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ResumesService, ResumeUploadResult } from './resumes.service';
+import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
+import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 const MAX_FILES = 500;
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB per file
@@ -34,11 +36,12 @@ export class ResumesController {
   async uploadResumes(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @UploadedFiles() files: Express.Multer.File[],
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<ResumeUploadResult> {
     if (!files || files.length === 0) {
       throw new BadRequestException('At least one file must be provided');
     }
-    return this.resumesService.uploadBatch(jobId, files);
+    return this.resumesService.uploadBatch(jobId, files, recruiter.recruiterId);
   }
 
   /**
@@ -48,8 +51,9 @@ export class ResumesController {
   @Get('jobs/:job_id/candidates')
   async listCandidates(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
-  ): Promise<object[]> {
-    return this.resumesService.listCandidates(jobId);
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
+  ): Promise<string[]> {
+    return this.resumesService.listCandidates(jobId, recruiter.recruiterId);
   }
 
   /**
@@ -59,7 +63,8 @@ export class ResumesController {
   @Get('candidates/:candidate_id')
   async getCandidate(
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
-  ): Promise<object> {
-    return this.resumesService.getCandidate(candidateId);
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
+  ): Promise<string> {
+    return this.resumesService.getCandidate(candidateId, recruiter.recruiterId);
   }
 }

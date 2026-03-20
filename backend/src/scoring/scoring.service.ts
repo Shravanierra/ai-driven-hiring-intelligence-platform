@@ -2,6 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,11 +34,14 @@ export class ScoringService {
     private readonly llmClient: LlmClient,
   ) {}
 
-  async computeScore(jobId: string, candidateId: string): Promise<FitScore> {
+  async computeScore(jobId: string, candidateId: string, recruiterId?: string): Promise<FitScore> {
     // Verify job exists
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    }
+    if (recruiterId && job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
     }
 
     // Verify candidate exists and belongs to this job
@@ -116,11 +120,14 @@ export class ScoringService {
     return this.fitScoreRepo.save(fitScore);
   }
 
-  async getScore(jobId: string, candidateId: string): Promise<FitScore> {
+  async getScore(jobId: string, candidateId: string, recruiterId?: string): Promise<FitScore> {
     // Verify job exists
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    }
+    if (recruiterId && job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
     }
 
     // Verify candidate exists and belongs to this job
@@ -143,7 +150,16 @@ export class ScoringService {
     return fitScore;
   }
 
-  async rescoreAll(jobId: string): Promise<{ rescored: number; failed: number; errors: Array<{ candidateId: string; error: string }> }> {
+  async rescoreAll(jobId: string, recruiterId?: string): Promise<{ rescored: number; failed: number; errors: Array<{ candidateId: string; error: string }> }> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const profiles = await this.profileRepo.find({ where: { jobId } });
 
     const results = await Promise.allSettled(

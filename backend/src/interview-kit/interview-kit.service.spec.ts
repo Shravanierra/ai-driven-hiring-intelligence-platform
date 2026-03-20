@@ -6,6 +6,7 @@ import { InterviewKitPdfService } from './interview-kit-pdf.service';
 import { InterviewKit } from '../entities/interview-kit.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { ScreeningCriteria } from '../entities/screening-criteria.entity';
+import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
 import { AiServiceUnavailableError } from '../llm/llm.types';
 
@@ -78,6 +79,7 @@ describe('InterviewKitService', () => {
         { provide: getRepositoryToken(InterviewKit), useValue: kitRepo },
         { provide: getRepositoryToken(CandidateProfile), useValue: profileRepo },
         { provide: getRepositoryToken(ScreeningCriteria), useValue: criteriaRepo },
+        { provide: getRepositoryToken(JobDescription), useValue: makeRepo() },
         { provide: LlmClient, useValue: llmClient },
         { provide: InterviewKitPdfService, useValue: { generatePdf: jest.fn() } },
       ],

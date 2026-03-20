@@ -11,6 +11,7 @@ import { SummaryGeneratorService } from './summary-generator.service';
 
 const mockJob: Partial<JobDescription> = {
   id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  recruiterId: 'recruiter-1',
   title: 'Software Engineer',
   status: 'parsed',
 };
@@ -117,7 +118,7 @@ describe('ResumesService', () => {
     it('throws NotFoundException when job does not exist', async () => {
       jobRepo.findOne.mockResolvedValue(null);
       const file = makeFile('cv.txt', 'text/plain', 'John Doe resume');
-      await expect(service.uploadBatch('non-existent-id', [file])).rejects.toThrow(
+      await expect(service.uploadBatch('non-existent-id', [file], 'recruiter-1')).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -134,7 +135,7 @@ describe('ResumesService', () => {
       profileRepo.save.mockResolvedValue(savedProfile);
 
       const file = makeFile('cv.txt', 'text/plain', 'Jane Doe\njane@example.com');
-      const result = await service.uploadBatch(mockJob.id!, [file]);
+      const result = await service.uploadBatch(mockJob.id!, [file], 'recruiter-1');
 
       expect(result.profiles).toHaveLength(1);
       expect(result.failures).toHaveLength(0);
@@ -151,7 +152,7 @@ describe('ResumesService', () => {
       profileRepo.save.mockResolvedValue(errorProfile);
 
       const file = makeFile('photo.png', 'image/png', 'binary');
-      const result = await service.uploadBatch(mockJob.id!, [file]);
+      const result = await service.uploadBatch(mockJob.id!, [file], 'recruiter-1');
 
       // Unsupported type creates an error profile (not a failure entry)
       expect(result.profiles).toHaveLength(1);
@@ -170,7 +171,7 @@ describe('ResumesService', () => {
       profileRepo.save.mockResolvedValue(errorProfile);
 
       const file = makeFile('cv.txt', 'text/plain', 'Some resume text');
-      const result = await service.uploadBatch(mockJob.id!, [file]);
+      const result = await service.uploadBatch(mockJob.id!, [file], 'recruiter-1');
 
       expect(result.profiles).toHaveLength(1);
       expect(result.failures).toHaveLength(0);
@@ -191,7 +192,7 @@ describe('ResumesService', () => {
         makeFile('cv2.txt', 'text/plain', 'Resume 2'),
         makeFile('cv3.txt', 'text/plain', 'Resume 3'),
       ];
-      const result = await service.uploadBatch(mockJob.id!, files);
+      const result = await service.uploadBatch(mockJob.id!, files, 'recruiter-1');
 
       expect(result.profiles).toHaveLength(3);
       expect(result.failures).toHaveLength(0);
@@ -210,7 +211,7 @@ describe('ResumesService', () => {
       const files = Array.from({ length: 600 }, (_, i) =>
         makeFile(`cv${i}.txt`, 'text/plain', `Resume ${i}`),
       );
-      const result = await service.uploadBatch(mockJob.id!, files);
+      const result = await service.uploadBatch(mockJob.id!, files, 'recruiter-1');
 
       // Only 500 processed
       expect(result.profiles.length + result.failures.length).toBeLessThanOrEqual(500);
@@ -220,7 +221,7 @@ describe('ResumesService', () => {
   describe('listCandidates', () => {
     it('throws NotFoundException when job does not exist', async () => {
       jobRepo.findOne.mockResolvedValue(null);
-      await expect(service.listCandidates('non-existent-id')).rejects.toThrow(
+      await expect(service.listCandidates('non-existent-id', 'recruiter-1')).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -229,16 +230,16 @@ describe('ResumesService', () => {
       jobRepo.findOne.mockResolvedValue(mockJob);
       profileRepo.find.mockResolvedValue([mockProfile]);
 
-      const result = await service.listCandidates(mockJob.id!);
+      const result = await service.listCandidates(mockJob.id!, 'recruiter-1');
       expect(result).toHaveLength(1);
-      expect((result[0] as any).id).toBe(mockProfile.id);
+      expect(JSON.parse(result[0] as string).id).toBe(mockProfile.id);
     });
 
     it('returns empty array when no candidates exist', async () => {
       jobRepo.findOne.mockResolvedValue(mockJob);
       profileRepo.find.mockResolvedValue([]);
 
-      const result = await service.listCandidates(mockJob.id!);
+      const result = await service.listCandidates(mockJob.id!, 'recruiter-1');
       expect(result).toEqual([]);
     });
   });
@@ -246,17 +247,19 @@ describe('ResumesService', () => {
   describe('getCandidate', () => {
     it('throws NotFoundException when candidate does not exist', async () => {
       profileRepo.findOne.mockResolvedValue(null);
-      await expect(service.getCandidate('non-existent-id')).rejects.toThrow(
+      await expect(service.getCandidate('non-existent-id', 'recruiter-1')).rejects.toThrow(
         NotFoundException,
       );
     });
 
     it('returns serialized profile for a valid candidate id', async () => {
       profileRepo.findOne.mockResolvedValue(mockProfile);
+      jobRepo.findOne.mockResolvedValue(mockJob);
 
-      const result = await service.getCandidate(mockProfile.id!);
-      expect((result as any).id).toBe(mockProfile.id);
-      expect((result as any).name).toBe(mockProfile.name);
+      const result = await service.getCandidate(mockProfile.id!, 'recruiter-1');
+      const parsed = JSON.parse(result);
+      expect(parsed.id).toBe(mockProfile.id);
+      expect(parsed.name).toBe(mockProfile.name);
     });
   });
 });

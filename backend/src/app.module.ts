@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './database/typeorm.config';
 import { LlmModule } from './llm/llm.module';
+import { AuthModule } from './auth/auth.module';
 import { JobsModule } from './jobs/jobs.module';
 import { ResumesModule } from './resumes/resumes.module';
 import { ScoringModule } from './scoring/scoring.module';
@@ -20,6 +21,7 @@ import { CandidateProfileModule } from './candidate-profile/candidate-profile.mo
     }),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     LlmModule,
+    AuthModule,
     JobsModule,
     ResumesModule,
     ScoringModule,

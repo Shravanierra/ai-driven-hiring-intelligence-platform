@@ -14,6 +14,8 @@ import { memoryStorage } from 'multer';
 import { JobsService, UpdateCriteriaDto } from './jobs.service';
 import { JobDescription } from '../entities/job-description.entity';
 import { ScreeningCriteria } from '../entities/screening-criteria.entity';
+import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
+import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 @Controller('jobs')
 export class JobsController {
@@ -28,26 +30,27 @@ export class JobsController {
   )
   async createJob(
     @UploadedFile() file: Express.Multer.File,
-    @Body('recruiter_id') recruiterId: string,
     @Body('title') title: string,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<JobDescription> {
-    // Default recruiter_id for now (auth guard will inject this in task 13)
-    const rid = recruiterId ?? '00000000-0000-0000-0000-000000000000';
     const jobTitle = title ?? 'Untitled Position';
-    return this.jobsService.uploadAndParse(file, rid, jobTitle);
+    return this.jobsService.uploadAndParse(file, recruiter.recruiterId, jobTitle);
   }
 
   @Get(':id')
   async getJob(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<JobDescription> {
-    return this.jobsService.findById(id);
+    return this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
   }
 
   @Get(':id/criteria')
   async getCriteria(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<ScreeningCriteria> {
+    await this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
     return this.jobsService.getCriteria(id);
   }
 
@@ -55,7 +58,9 @@ export class JobsController {
   async saveCriteria(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateCriteriaDto,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<ScreeningCriteria> {
+    await this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
     return this.jobsService.saveCriteria(id, dto);
   }
 }

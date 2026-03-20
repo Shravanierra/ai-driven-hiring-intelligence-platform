@@ -193,7 +193,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Property 22: Candidate Profile Serialization Round Trip**
     - **Validates: Requirements 8.1, 8.2, 8.3**
 
-- [ ] 13. Authentication, authorization, and API guards
+- [x] 13. Authentication, authorization, and API guards
   - Implement JWT-based auth guard in NestJS; attach recruiter_id to all requests
   - Enforce ownership checks on all job/candidate/shortlist/kit endpoints (HTTP 403 for unauthorized)
   - Wire authorization scope into the Conversational Assistant query layer

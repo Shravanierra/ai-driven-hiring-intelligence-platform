@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +22,7 @@ const SUPPORTED_MIME_TYPES = [
 const MAX_BATCH_SIZE = 500;
 
 export interface ResumeUploadResult {
-  profiles: object[];
+  profiles: string[];
   failures: FailureEntry[];
 }
 
@@ -60,15 +60,19 @@ export class ResumesService {
   async uploadBatch(
     jobId: string,
     files: Express.Multer.File[],
+    recruiterId: string,
   ): Promise<ResumeUploadResult> {
-    // Verify job exists
+    // Verify job exists and belongs to recruiter
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
     }
+    if (job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+    }
 
     const batch = files.slice(0, MAX_BATCH_SIZE);
-    const profiles: object[] = [];
+    const profiles: string[] = [];
     const failures: FailureEntry[] = [];
 
     for (const file of batch) {
@@ -89,10 +93,13 @@ export class ResumesService {
     return { profiles, failures };
   }
 
-  async listCandidates(jobId: string): Promise<object[]> {
+  async listCandidates(jobId: string, recruiterId: string): Promise<string[]> {
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    }
+    if (job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
     }
 
     const profiles = await this.profileRepo.find({
@@ -103,10 +110,15 @@ export class ResumesService {
     return profiles.map(serializeCandidateProfile);
   }
 
-  async getCandidate(candidateId: string): Promise<object> {
+  async getCandidate(candidateId: string, recruiterId: string): Promise<string> {
     const profile = await this.profileRepo.findOne({ where: { id: candidateId } });
     if (!profile) {
       throw new NotFoundException(`Candidate with id "${candidateId}" not found`);
+    }
+    // Verify the parent job belongs to the recruiter
+    const job = await this.jobRepo.findOne({ where: { id: profile.jobId } });
+    if (!job || job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to candidate "${candidateId}"`);
     }
     return serializeCandidateProfile(profile);
   }

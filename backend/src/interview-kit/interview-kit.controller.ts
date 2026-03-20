@@ -12,6 +12,8 @@ import {
 import { Response } from 'express';
 import { InterviewKitService } from './interview-kit.service';
 import { InterviewKit, InterviewQuestion, QuestionType } from '../entities/interview-kit.entity';
+import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
+import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 class UpdateInterviewKitDto {
   questions: InterviewQuestion[];
@@ -27,16 +29,18 @@ export class InterviewKitController {
   async generateKit(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<InterviewKit> {
-    return this.interviewKitService.generateKit(jobId, candidateId);
+    return this.interviewKitService.generateKit(jobId, candidateId, recruiter.recruiterId);
   }
 
   @Get(':job_id/candidates/:candidate_id/interview-kit')
   async getKit(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<InterviewKit> {
-    return this.interviewKitService.getKit(jobId, candidateId);
+    return this.interviewKitService.getKit(jobId, candidateId, recruiter.recruiterId);
   }
 
   @Put(':job_id/candidates/:candidate_id/interview-kit')
@@ -44,6 +48,7 @@ export class InterviewKitController {
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
     @Body() body: UpdateInterviewKitDto,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<InterviewKit> {
     if (!Array.isArray(body.questions)) {
       throw new BadRequestException('questions must be an array');
@@ -70,7 +75,7 @@ export class InterviewKitController {
       }
     }
 
-    return this.interviewKitService.updateKit(jobId, candidateId, body.questions);
+    return this.interviewKitService.updateKit(jobId, candidateId, body.questions, recruiter.recruiterId);
   }
 
   @Get(':job_id/candidates/:candidate_id/interview-kit/export')
@@ -78,8 +83,9 @@ export class InterviewKitController {
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
     @Res() res: Response,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<void> {
-    const pdfBuffer = await this.interviewKitService.exportKitPdf(jobId, candidateId);
+    const pdfBuffer = await this.interviewKitService.exportKitPdf(jobId, candidateId, recruiter.recruiterId);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="interview-kit-${candidateId}.pdf"`,

@@ -4,21 +4,17 @@ import {
   Get,
   Param,
   Body,
-  Headers,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { AssistantService } from './assistant.service';
 import { AssistantSession } from '../entities/assistant-session.entity';
-
-class CreateSessionDto {
-  recruiterId: string;
-}
+import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
+import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 class QueryDto {
   query: string;
-  recruiterId: string;
 }
 
 @Controller('assistant')
@@ -27,8 +23,10 @@ export class AssistantController {
 
   @Post('sessions')
   @HttpCode(HttpStatus.CREATED)
-  async createSession(@Body() body: CreateSessionDto): Promise<AssistantSession> {
-    return this.assistantService.createSession(body.recruiterId);
+  async createSession(
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
+  ): Promise<AssistantSession> {
+    return this.assistantService.createSession(recruiter.recruiterId);
   }
 
   @Post('sessions/:id/query')
@@ -36,15 +34,16 @@ export class AssistantController {
   async query(
     @Param('id', new ParseUUIDPipe()) sessionId: string,
     @Body() body: QueryDto,
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<unknown> {
-    return this.assistantService.query(sessionId, body.recruiterId, body.query);
+    return this.assistantService.query(sessionId, recruiter.recruiterId, body.query);
   }
 
   @Get('sessions/:id')
   async getSession(
     @Param('id', new ParseUUIDPipe()) sessionId: string,
-    @Body() body: { recruiterId?: string },
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<AssistantSession> {
-    return this.assistantService.getSession(sessionId, body.recruiterId);
+    return this.assistantService.getSession(sessionId, recruiter.recruiterId);
   }
 }

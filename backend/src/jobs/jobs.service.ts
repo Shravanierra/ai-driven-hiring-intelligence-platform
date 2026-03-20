@@ -2,6 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ForbiddenException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -130,6 +131,14 @@ export class JobsService {
     const job = await this.jobRepo.findOne({ where: { id } });
     if (!job) {
       throw new NotFoundException(`Job description with id "${id}" not found`);
+    }
+    return job;
+  }
+
+  async findByIdForRecruiter(id: string, recruiterId: string): Promise<JobDescription> {
+    const job = await this.findById(id);
+    if (job.recruiterId !== recruiterId) {
+      throw new ForbiddenException(`You do not have access to job "${id}"`);
     }
     return job;
   }

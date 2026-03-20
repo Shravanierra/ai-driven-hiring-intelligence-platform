@@ -2,6 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ForbiddenException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { InterviewKit, InterviewQuestion, QuestionType } from '../entities/interview-kit.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { ScreeningCriteria } from '../entities/screening-criteria.entity';
+import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
 import { AiServiceUnavailableError } from '../llm/llm.types';
 import { InterviewKitPdfService } from './interview-kit-pdf.service';
@@ -35,11 +37,22 @@ export class InterviewKitService {
     private readonly profileRepo: Repository<CandidateProfile>,
     @InjectRepository(ScreeningCriteria)
     private readonly criteriaRepo: Repository<ScreeningCriteria>,
+    @InjectRepository(JobDescription)
+    private readonly jobRepo: Repository<JobDescription>,
     private readonly llmClient: LlmClient,
     private readonly pdfService: InterviewKitPdfService,
   ) {}
 
-  async generateKit(jobId: string, candidateId: string): Promise<InterviewKit> {
+  async generateKit(jobId: string, candidateId: string, recruiterId?: string): Promise<InterviewKit> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const profile = await this.profileRepo.findOne({
       where: { id: candidateId, jobId },
     });
@@ -67,7 +80,16 @@ export class InterviewKitService {
     return this.kitRepo.save(kit);
   }
 
-  async getKit(jobId: string, candidateId: string): Promise<InterviewKit> {
+  async getKit(jobId: string, candidateId: string, recruiterId?: string): Promise<InterviewKit> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const kit = await this.kitRepo.findOne({ where: { candidateId, jobId } });
     if (!kit) {
       throw new NotFoundException(
@@ -81,7 +103,17 @@ export class InterviewKitService {
     jobId: string,
     candidateId: string,
     questions: InterviewQuestion[],
+    recruiterId?: string,
   ): Promise<InterviewKit> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const kit = await this.kitRepo.findOne({ where: { candidateId, jobId } });
     if (!kit) {
       throw new NotFoundException(
@@ -92,7 +124,16 @@ export class InterviewKitService {
     return this.kitRepo.save(kit);
   }
 
-  async exportKitPdf(jobId: string, candidateId: string): Promise<Buffer> {
+  async exportKitPdf(jobId: string, candidateId: string, recruiterId?: string): Promise<Buffer> {
+    if (recruiterId) {
+      const job = await this.jobRepo.findOne({ where: { id: jobId } });
+      if (!job) {
+        throw new NotFoundException(`Job description with id "${jobId}" not found`);
+      }
+      if (job.recruiterId !== recruiterId) {
+        throw new ForbiddenException(`You do not have access to job "${jobId}"`);
+      }
+    }
     const kit = await this.kitRepo.findOne({ where: { candidateId, jobId } });
     if (!kit) {
       throw new NotFoundException(

@@ -5,6 +5,7 @@ import { ShortlistService } from './shortlist.service';
 import { ShortlistEntry } from '../entities/shortlist-entry.entity';
 import { FitScore } from '../entities/fit-score.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
+import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
 
 const mockFitScoreRepo = () => ({
@@ -80,6 +81,7 @@ describe('ShortlistService', () => {
         { provide: getRepositoryToken(FitScore), useFactory: mockFitScoreRepo },
         { provide: getRepositoryToken(CandidateProfile), useFactory: mockProfileRepo },
         { provide: getRepositoryToken(ShortlistEntry), useFactory: mockShortlistRepo },
+        { provide: getRepositoryToken(JobDescription), useValue: { findOne: jest.fn() } },
         { provide: LlmClient, useFactory: mockLlmClient },
       ],
     }).compile();
