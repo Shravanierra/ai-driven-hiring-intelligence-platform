@@ -9,6 +9,8 @@ import { ScoringModule } from './scoring/scoring.module';
 import { ShortlistModule } from './shortlist/shortlist.module';
 import { BiasModule } from './bias/bias.module';
 import { AssistantModule } from './assistant/assistant.module';
+import { InterviewKitModule } from './interview-kit/interview-kit.module';
+import { CandidateProfileModule } from './candidate-profile/candidate-profile.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { AssistantModule } from './assistant/assistant.module';
     ShortlistModule,
     BiasModule,
     AssistantModule,
+    InterviewKitModule,
+    CandidateProfileModule,
   ],
 })
 export class AppModule {}

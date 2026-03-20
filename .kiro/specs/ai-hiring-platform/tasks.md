@@ -163,16 +163,16 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
     - **Validates: Requirements 6.5**
 
 - [ ] 10. Interview Kit Service
-  - [ ] 10.1 Implement InterviewKitModule with generation and CRUD
+  - [x] 10.1 Implement InterviewKitModule with generation and CRUD
     - Implement `POST /jobs/{job_id}/candidates/{candidate_id}/interview-kit`: call LLM with candidate profile and screening criteria to generate 5–15 questions; ensure at least one behavioral, one technical, and one gap question; each question must have a rubric with non-empty strong/adequate/weak fields; persist InterviewKit
     - Implement `GET` and `PUT` endpoints for retrieving and updating the kit (add/remove/edit questions)
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [ ] 10.2 Implement Interview Kit PDF export
+  - [x] 10.2 Implement Interview Kit PDF export
     - Implement `GET /jobs/{job_id}/candidates/{candidate_id}/interview-kit/export`: use Puppeteer or pdfmake to render questions, rubrics, and candidate summary into a PDF; return as `application/pdf` response
     - _Requirements: 7.5_
 
-  - [ ]* 10.3 Write property test for interview kit structure completeness
+  - [x] 10.3 Write property test for interview kit structure completeness
     - **Property 20: Interview Kit Structure Completeness**
     - **Validates: Requirements 7.1, 7.2, 7.3**
 
@@ -184,7 +184,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 12. Candidate Profile Serialization and Schema Validation
-  - [ ] 12.1 Implement CandidateProfile serialization, deserialization, and schema validation
+  - [x] 12.1 Implement CandidateProfile serialization, deserialization, and schema validation
     - Implement `serializeCandidateProfile` and `deserializeCandidateProfile` functions using the v1 JSON schema; expose schema definition via `GET /schema/candidate-profile`
     - On deserialization failure, return HTTP 400 with `{ error: "schema_validation_failed", fields: [...] }`
     - _Requirements: 8.1, 8.2, 8.4, 8.5_
