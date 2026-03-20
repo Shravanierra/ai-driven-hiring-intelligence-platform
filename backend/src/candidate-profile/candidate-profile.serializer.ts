@@ -1,11 +1,111 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+import addFormats from 'ajv-formats';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 
+// ─── v1 JSON Schema ───────────────────────────────────────────────────────────
+
+export const CANDIDATE_PROFILE_V1_SCHEMA = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  title: 'CandidateProfile',
+  description: 'v1 schema for a serialized CandidateProfile',
+  type: 'object',
+  required: [
+    'schema_version',
+    'id',
+    'job_id',
+    'name',
+    'contact',
+    'work_experience',
+    'education',
+    'skills',
+    'summary',
+    'parse_status',
+    'created_at',
+  ],
+  properties: {
+    schema_version: { type: 'string', const: '1' },
+    id: { type: 'string', format: 'uuid' },
+    job_id: { type: 'string', format: 'uuid' },
+    name: { type: 'string', minLength: 1 },
+    contact: {
+      type: 'object',
+      required: ['email'],
+      properties: {
+        email: { type: 'string' },
+        phone: { type: ['string', 'null'] },
+        location: { type: ['string', 'null'] },
+      },
+      additionalProperties: false,
+    },
+    work_experience: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['company', 'title', 'start_date', 'description'],
+        properties: {
+          company: { type: 'string' },
+          title: { type: 'string' },
+          start_date: { type: 'string' },
+          end_date: { type: ['string', 'null'] },
+          description: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    },
+    education: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['institution', 'degree', 'field'],
+        properties: {
+          institution: { type: 'string' },
+          degree: { type: 'string' },
+          field: { type: 'string' },
+          graduation_year: { type: ['integer', 'null'] },
+        },
+        additionalProperties: false,
+      },
+    },
+    skills: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['canonical_name', 'raw_aliases'],
+        properties: {
+          canonical_name: { type: 'string' },
+          raw_aliases: { type: 'array', items: { type: 'string' } },
+        },
+        additionalProperties: false,
+      },
+    },
+    summary: { type: 'string' },
+    parse_status: { type: 'string', enum: ['success', 'error'] },
+    error_message: { type: ['string', 'null'] },
+    created_at: { type: 'string' },
+  },
+  additionalProperties: false,
+} as const;
+
+// ─── AJV instance ─────────────────────────────────────────────────────────────
+
+const ajv = new Ajv({ allErrors: true });
+addFormats(ajv);
+const validateSchema = ajv.compile(CANDIDATE_PROFILE_V1_SCHEMA);
+
+// ─── Error type ───────────────────────────────────────────────────────────────
+
+export interface SchemaValidationError {
+  error: 'schema_validation_failed';
+  fields: string[];
+}
+
+// ─── Serializer ───────────────────────────────────────────────────────────────
+
 /**
- * Serializes a CandidateProfile entity to a plain JSON-compatible object
- * conforming to the v1 schema.
+ * Serializes a CandidateProfile entity to a JSON string conforming to the v1 schema.
  */
-export function serializeCandidateProfile(profile: CandidateProfile): object {
-  return {
+export function serializeCandidateProfile(profile: CandidateProfile): string {
+  const obj = {
     schema_version: profile.schemaVersion ?? '1',
     id: profile.id,
     job_id: profile.jobId,
@@ -17,46 +117,36 @@ export function serializeCandidateProfile(profile: CandidateProfile): object {
     summary: profile.summary,
     parse_status: profile.parseStatus,
     error_message: profile.errorMessage ?? null,
-    created_at: profile.createdAt?.toISOString() ?? new Date().toISOString(),
+    created_at: profile.createdAt instanceof Date
+      ? profile.createdAt.toISOString()
+      : (profile.createdAt ?? new Date().toISOString()),
   };
-}
-
-export interface SchemaValidationError {
-  error: 'schema_validation_failed';
-  fields: string[];
+  return JSON.stringify(obj);
 }
 
 /**
- * Deserializes a plain JSON object back into a CandidateProfile-shaped object.
- * Throws SchemaValidationError if required fields are missing or invalid.
+ * Deserializes a JSON string into a CandidateProfile entity.
+ * Throws a SchemaValidationError if the JSON fails v1 schema validation.
  */
-export function deserializeCandidateProfile(
-  data: unknown,
-): CandidateProfile {
-  const errors: string[] = [];
-
-  if (typeof data !== 'object' || data === null) {
+export function deserializeCandidateProfile(json: string): CandidateProfile {
+  let data: unknown;
+  try {
+    data = JSON.parse(json);
+  } catch {
     throw { error: 'schema_validation_failed', fields: ['root'] } as SchemaValidationError;
   }
 
+  const valid = validateSchema(data);
+  if (!valid) {
+    const fields = (validateSchema.errors ?? []).map((e) => {
+      // instancePath is like "/contact/email"; strip leading slash
+      const path = e.instancePath ? e.instancePath.replace(/^\//, '').replace(/\//g, '.') : (e.params as any)?.missingProperty ?? 'unknown';
+      return path;
+    });
+    throw { error: 'schema_validation_failed', fields } as SchemaValidationError;
+  }
+
   const obj = data as Record<string, unknown>;
-
-  if (!obj.id || typeof obj.id !== 'string') errors.push('id');
-  if (!obj.job_id || typeof obj.job_id !== 'string') errors.push('job_id');
-  if (!obj.name || typeof obj.name !== 'string') errors.push('name');
-  if (!obj.contact || typeof obj.contact !== 'object') errors.push('contact');
-  if (!Array.isArray(obj.work_experience)) errors.push('work_experience');
-  if (!Array.isArray(obj.education)) errors.push('education');
-  if (!Array.isArray(obj.skills)) errors.push('skills');
-  if (typeof obj.summary !== 'string') errors.push('summary');
-  if (obj.parse_status !== 'success' && obj.parse_status !== 'error') {
-    errors.push('parse_status');
-  }
-
-  if (errors.length > 0) {
-    throw { error: 'schema_validation_failed', fields: errors } as SchemaValidationError;
-  }
-
   const profile = new CandidateProfile();
   profile.schemaVersion = (obj.schema_version as string) ?? '1';
   profile.id = obj.id as string;
@@ -69,9 +159,7 @@ export function deserializeCandidateProfile(
   profile.summary = obj.summary as string;
   profile.parseStatus = obj.parse_status as CandidateProfile['parseStatus'];
   profile.errorMessage = (obj.error_message as string | null) ?? null;
-  profile.createdAt = obj.created_at
-    ? new Date(obj.created_at as string)
-    : new Date();
+  profile.createdAt = new Date(obj.created_at as string);
 
   return profile;
 }
