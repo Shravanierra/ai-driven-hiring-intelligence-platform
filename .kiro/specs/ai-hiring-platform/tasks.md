@@ -199,7 +199,7 @@ Incremental implementation of the AI-powered ATS backend (NestJS/TypeScript) and
   - Wire authorization scope into the Conversational Assistant query layer
   - _Requirements: 6.5_
 
-- [ ] 14. React frontend — recruiter dashboard and chat UI
+- [x] 14. React frontend — recruiter dashboard and chat UI
   - Scaffold React+Vite app with TailwindCSS; set up React Router and API client (axios or fetch wrapper)
   - Implement Job Description upload page (drag-and-drop, status polling, criteria review/edit form)
   - Implement Candidate list page with FitScore display, score breakdown, and bias warning indicators
