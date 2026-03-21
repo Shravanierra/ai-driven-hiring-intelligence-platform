@@ -12,7 +12,15 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_config_1 = require("./database/typeorm.config");
 const llm_module_1 = require("./llm/llm.module");
+const auth_module_1 = require("./auth/auth.module");
 const jobs_module_1 = require("./jobs/jobs.module");
+const resumes_module_1 = require("./resumes/resumes.module");
+const scoring_module_1 = require("./scoring/scoring.module");
+const shortlist_module_1 = require("./shortlist/shortlist.module");
+const bias_module_1 = require("./bias/bias.module");
+const assistant_module_1 = require("./assistant/assistant.module");
+const interview_kit_module_1 = require("./interview-kit/interview-kit.module");
+const candidate_profile_module_1 = require("./candidate-profile/candidate-profile.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,7 +33,15 @@ exports.AppModule = AppModule = __decorate([
             }),
             typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfig),
             llm_module_1.LlmModule,
+            auth_module_1.AuthModule,
             jobs_module_1.JobsModule,
+            resumes_module_1.ResumesModule,
+            scoring_module_1.ScoringModule,
+            shortlist_module_1.ShortlistModule,
+            bias_module_1.BiasModule,
+            assistant_module_1.AssistantModule,
+            interview_kit_module_1.InterviewKitModule,
+            candidate_profile_module_1.CandidateProfileModule,
         ],
     })
 ], AppModule);

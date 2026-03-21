@@ -39,6 +39,10 @@ __decorate([
     __metadata("design:type", Array)
 ], FitScore.prototype, "breakdown", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 10, default: 'ok' }),
+    __metadata("design:type", String)
+], FitScore.prototype, "status", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'computed_at', type: 'timestamptz' }),
     __metadata("design:type", Date)
 ], FitScore.prototype, "computedAt", void 0);

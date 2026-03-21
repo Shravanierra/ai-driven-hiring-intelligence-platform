@@ -23,14 +23,21 @@ let LlmClient = LlmClient_1 = class LlmClient {
     constructor(config) {
         this.config = config;
         this.logger = new common_1.Logger(LlmClient_1.name);
+        const endpoint = this.config.getOrThrow('AZURE_OPENAI_ENDPOINT');
+        const apiKey = this.config.getOrThrow('AZURE_OPENAI_API_KEY');
+        this.chatDeployment = this.config.get('AZURE_OPENAI_CHAT_DEPLOYMENT') ?? CHAT_MODEL;
+        this.embeddingDeployment = this.config.get('AZURE_OPENAI_EMBEDDING_DEPLOYMENT') ?? EMBEDDING_MODEL;
+        const baseURL = `${endpoint.replace(/\/$/, '')}/openai/v1`;
         this.openai = new openai_1.default({
-            apiKey: this.config.get('OPENAI_API_KEY'),
+            apiKey,
+            baseURL,
+            defaultHeaders: { 'api-key': apiKey },
         });
     }
     async createEmbedding(text) {
         return this.withRetry(async () => {
             const response = await this.openai.embeddings.create({
-                model: EMBEDDING_MODEL,
+                model: this.embeddingDeployment,
                 input: text,
             });
             return {
@@ -46,7 +53,7 @@ let LlmClient = LlmClient_1 = class LlmClient {
     async createChatCompletion(messages, options = {}) {
         return this.withRetry(async () => {
             const response = await this.openai.chat.completions.create({
-                model: CHAT_MODEL,
+                model: this.chatDeployment,
                 messages,
                 temperature: options.temperature ?? 0.2,
                 max_tokens: options.maxTokens,

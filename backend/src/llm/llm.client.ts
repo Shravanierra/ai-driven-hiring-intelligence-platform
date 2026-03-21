@@ -18,10 +18,25 @@ const BASE_DELAY_MS = 500;
 export class LlmClient {
   private readonly logger = new Logger(LlmClient.name);
   private readonly openai: OpenAI;
+  private readonly chatDeployment: string;
+  private readonly embeddingDeployment: string;
 
   constructor(private readonly config: ConfigService) {
+    const endpoint = this.config.getOrThrow<string>('AZURE_OPENAI_ENDPOINT');
+    const apiKey = this.config.getOrThrow<string>('AZURE_OPENAI_API_KEY');
+
+    this.chatDeployment = this.config.get<string>('AZURE_OPENAI_CHAT_DEPLOYMENT') ?? CHAT_MODEL;
+    this.embeddingDeployment = this.config.get<string>('AZURE_OPENAI_EMBEDDING_DEPLOYMENT') ?? EMBEDDING_MODEL;
+
+    // Azure AI Foundry supports the OpenAI-compatible v1 API.
+    // Use the plain OpenAI client with the Foundry endpoint as baseURL.
+    // The endpoint format: https://<resource>.services.ai.azure.com/openai/v1/
+    const baseURL = `${endpoint.replace(/\/$/, '')}/openai/v1`;
+
     this.openai = new OpenAI({
-      apiKey: this.config.get<string>('OPENAI_API_KEY'),
+      apiKey,
+      baseURL,
+      defaultHeaders: { 'api-key': apiKey },
     });
   }
 
@@ -32,7 +47,7 @@ export class LlmClient {
   async createEmbedding(text: string): Promise<EmbeddingResult> {
     return this.withRetry(async () => {
       const response = await this.openai.embeddings.create({
-        model: EMBEDDING_MODEL,
+        model: this.embeddingDeployment,
         input: text,
       });
 
@@ -57,7 +72,7 @@ export class LlmClient {
   ): Promise<ChatCompletionResult> {
     return this.withRetry(async () => {
       const response = await this.openai.chat.completions.create({
-        model: CHAT_MODEL,
+        model: this.chatDeployment,
         messages,
         temperature: options.temperature ?? 0.2,
         max_tokens: options.maxTokens,

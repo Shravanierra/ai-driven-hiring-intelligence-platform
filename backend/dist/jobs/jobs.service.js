@@ -25,17 +25,19 @@ const uuid_1 = require("uuid");
 const job_description_entity_1 = require("../entities/job-description.entity");
 const screening_criteria_entity_1 = require("../entities/screening-criteria.entity");
 const llm_client_1 = require("../llm/llm.client");
+const scoring_service_1 = require("../scoring/scoring.service");
 const SUPPORTED_MIME_TYPES = [
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'text/plain',
 ];
 let JobsService = JobsService_1 = class JobsService {
-    constructor(jobRepo, criteriaRepo, llmClient, config) {
+    constructor(jobRepo, criteriaRepo, llmClient, config, scoringService) {
         this.jobRepo = jobRepo;
         this.criteriaRepo = criteriaRepo;
         this.llmClient = llmClient;
         this.config = config;
+        this.scoringService = scoringService;
         this.logger = new common_1.Logger(JobsService_1.name);
         this.minioClient = new Minio.Client({
             endPoint: this.config.get('MINIO_ENDPOINT', 'localhost'),
@@ -60,13 +62,13 @@ let JobsService = JobsService_1 = class JobsService {
         });
         await this.jobRepo.save(job);
         let fileUrl = null;
-        let rawText = null;
         try {
             fileUrl = await this.uploadToMinio(file);
         }
         catch (err) {
-            this.logger.warn(`MinIO upload failed for job ${job.id}: ${err.message}`);
+            this.logger.warn(`MinIO upload skipped for job ${job.id}: ${err.message}`);
         }
+        let rawText = null;
         try {
             rawText = await this.extractText(file);
         }
@@ -102,6 +104,13 @@ let JobsService = JobsService_1 = class JobsService {
         }
         return job;
     }
+    async findByIdForRecruiter(id, recruiterId) {
+        const job = await this.findById(id);
+        if (job.recruiterId !== recruiterId) {
+            throw new common_1.ForbiddenException(`You do not have access to job "${id}"`);
+        }
+        return job;
+    }
     async getCriteria(jobId) {
         await this.findById(jobId);
         const criteria = await this.criteriaRepo.findOne({
@@ -119,6 +128,7 @@ let JobsService = JobsService_1 = class JobsService {
             where: { jobId },
             order: { version: 'DESC' },
         });
+        let saved;
         if (existing) {
             existing.version = existing.version + 1;
             if (dto.required_skills !== undefined)
@@ -131,18 +141,24 @@ let JobsService = JobsService_1 = class JobsService {
                 existing.responsibilities = dto.responsibilities;
             if (dto.custom_criteria !== undefined)
                 existing.customCriteria = dto.custom_criteria;
-            return this.criteriaRepo.save(existing);
+            saved = await this.criteriaRepo.save(existing);
         }
-        const criteria = this.criteriaRepo.create({
-            jobId,
-            version: 1,
-            requiredSkills: dto.required_skills ?? [],
-            preferredSkills: dto.preferred_skills ?? [],
-            experienceLevel: dto.experience_level ?? 'mid',
-            responsibilities: dto.responsibilities ?? [],
-            customCriteria: dto.custom_criteria ?? [],
-        });
-        return this.criteriaRepo.save(criteria);
+        else {
+            const criteria = this.criteriaRepo.create({
+                jobId,
+                version: 1,
+                requiredSkills: dto.required_skills ?? [],
+                preferredSkills: dto.preferred_skills ?? [],
+                experienceLevel: dto.experience_level ?? 'mid',
+                responsibilities: dto.responsibilities ?? [],
+                customCriteria: dto.custom_criteria ?? [],
+            });
+            saved = await this.criteriaRepo.save(criteria);
+        }
+        this.scoringService
+            .rescoreAll(jobId)
+            .catch((err) => this.logger.error(`Auto-rescore failed for job ${jobId}: ${err.message}`));
+        return saved;
     }
     async generateCriteria(jobId, rawText) {
         const systemPrompt = `You are an expert recruiter assistant. Extract structured screening criteria from the job description text provided. Return ONLY valid JSON with this exact shape:
@@ -239,6 +255,7 @@ exports.JobsService = JobsService = JobsService_1 = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         llm_client_1.LlmClient,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        scoring_service_1.ScoringService])
 ], JobsService);
 //# sourceMappingURL=jobs.service.js.map

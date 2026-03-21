@@ -13,12 +13,16 @@ const job_description_entity_1 = require("../entities/job-description.entity");
 const screening_criteria_entity_1 = require("../entities/screening-criteria.entity");
 const jobs_controller_1 = require("./jobs.controller");
 const jobs_service_1 = require("./jobs.service");
+const scoring_module_1 = require("../scoring/scoring.module");
 let JobsModule = class JobsModule {
 };
 exports.JobsModule = JobsModule;
 exports.JobsModule = JobsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([job_description_entity_1.JobDescription, screening_criteria_entity_1.ScreeningCriteria])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([job_description_entity_1.JobDescription, screening_criteria_entity_1.ScreeningCriteria]),
+            scoring_module_1.ScoringModule,
+        ],
         controllers: [jobs_controller_1.JobsController],
         providers: [jobs_service_1.JobsService],
         exports: [jobs_service_1.JobsService],

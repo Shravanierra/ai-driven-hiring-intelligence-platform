@@ -17,22 +17,24 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const jobs_service_1 = require("./jobs.service");
+const current_recruiter_decorator_1 = require("../auth/current-recruiter.decorator");
 let JobsController = class JobsController {
     constructor(jobsService) {
         this.jobsService = jobsService;
     }
-    async createJob(file, recruiterId, title) {
-        const rid = recruiterId ?? '00000000-0000-0000-0000-000000000000';
+    async createJob(file, title, recruiter) {
         const jobTitle = title ?? 'Untitled Position';
-        return this.jobsService.uploadAndParse(file, rid, jobTitle);
+        return this.jobsService.uploadAndParse(file, recruiter.recruiterId, jobTitle);
     }
-    async getJob(id) {
-        return this.jobsService.findById(id);
+    async getJob(id, recruiter) {
+        return this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
     }
-    async getCriteria(id) {
+    async getCriteria(id, recruiter) {
+        await this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
         return this.jobsService.getCriteria(id);
     }
-    async saveCriteria(id, dto) {
+    async saveCriteria(id, dto, recruiter) {
+        await this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
         return this.jobsService.saveCriteria(id, dto);
     }
 };
@@ -44,32 +46,35 @@ __decorate([
         limits: { fileSize: 20 * 1024 * 1024 },
     })),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Body)('recruiter_id')),
-    __param(2, (0, common_1.Body)('title')),
+    __param(1, (0, common_1.Body)('title')),
+    __param(2, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "createJob", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', new common_1.ParseUUIDPipe())),
+    __param(1, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "getJob", null);
 __decorate([
     (0, common_1.Get)(':id/criteria'),
     __param(0, (0, common_1.Param)('id', new common_1.ParseUUIDPipe())),
+    __param(1, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "getCriteria", null);
 __decorate([
     (0, common_1.Put)(':id/criteria'),
     __param(0, (0, common_1.Param)('id', new common_1.ParseUUIDPipe())),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "saveCriteria", null);
 exports.JobsController = JobsController = __decorate([

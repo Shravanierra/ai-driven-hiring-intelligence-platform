@@ -1,4 +1,5 @@
 export type CriterionStatus = 'met' | 'partial' | 'not_met';
+export type FitScoreStatus = 'ok' | 'error';
 export interface ScoreBreakdownItem {
     criterion_label: string;
     status: CriterionStatus;
@@ -12,5 +13,6 @@ export declare class FitScore {
     criteriaVersion: number;
     score: number;
     breakdown: ScoreBreakdownItem[];
+    status: FitScoreStatus;
     computedAt: Date;
 }

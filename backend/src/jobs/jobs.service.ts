@@ -81,17 +81,15 @@ export class JobsService {
     });
     await this.jobRepo.save(job);
 
-    // Upload to MinIO and parse
+    // Upload to MinIO (non-fatal — parsing proceeds from buffer regardless)
     let fileUrl: string | null = null;
-    let rawText: string | null = null;
-
     try {
       fileUrl = await this.uploadToMinio(file);
     } catch (err) {
-      this.logger.warn(`MinIO upload failed for job ${job.id}: ${(err as Error).message}`);
-      // Continue without file URL — parsing can still proceed from buffer
+      this.logger.warn(`MinIO upload skipped for job ${job.id}: ${(err as Error).message}`);
     }
 
+    let rawText: string | null = null;
     try {
       rawText = await this.extractText(file);
     } catch (err) {
