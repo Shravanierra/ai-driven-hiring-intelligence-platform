@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
+import HiringLogo from '../components/HiringLogo';
 
 interface CandidateResult {
   id: string;
@@ -68,7 +69,10 @@ export default function AssistantPage() {
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Conversational Assistant</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <HiringLogo size={36} />
+        <h1 className="text-2xl font-bold text-gray-800">Conversational Assistant</h1>
+      </div>
 
       {/* Session history */}
       <div className="flex-1 overflow-y-auto space-y-6 pr-1">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import HiringLogo from '../components/HiringLogo';
 
 type Mode = 'login' | 'register';
 
@@ -34,11 +35,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl border border-gray-200 p-8 w-full max-w-sm space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-indigo-600">AI Hiring</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
-          </p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-2xl bg-indigo-400 blur-xl opacity-30 scale-110" />
+            <HiringLogo size={64} className="relative" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-indigo-600">AI Hiring</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
+            </p>
+          </div>
         </div>
 
         <form onSubmit={submit} className="space-y-4">
