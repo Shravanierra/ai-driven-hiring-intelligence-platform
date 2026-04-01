@@ -3,12 +3,12 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 
 interface ShortlistEntry {
-  candidate_id: string;
+  candidateId: string;
   rank: number;
-  fit_score: number;
+  fitScore: number;
   reasoning: string;
   decision: 'pending' | 'accepted' | 'rejected' | 'deferred';
-  candidate_name?: string;
+  candidateName?: string;
 }
 
 interface Filters {
@@ -31,7 +31,18 @@ export default function ShortlistPage() {
     setLoading(true);
     try {
       const { data } = await api.get(`/jobs/${jobId}/shortlist`);
-      setEntries(data);
+      // Enrich with candidate names
+      const enriched = await Promise.all(
+        (data as ShortlistEntry[]).map(async (e) => {
+          try {
+            const { data: candidate } = await api.get(`/candidates/${e.candidateId}`);
+            return { ...e, candidateName: candidate.name ?? candidate.id };
+          } catch {
+            return e;
+          }
+        }),
+      );
+      setEntries(enriched);
     } catch {
       setError('Failed to load shortlist');
     } finally {
@@ -66,10 +77,10 @@ export default function ShortlistPage() {
     try {
       await api.patch(`/jobs/${jobId}/shortlist/${candidateId}`, { decision });
       setEntries((prev) =>
-        prev.map((e) => (e.candidate_id === candidateId ? { ...e, decision } : e)),
+        prev.map((e) => (e.candidateId === candidateId ? { ...e, decision } : e)),
       );
-    } catch {
-      setError('Failed to update decision');
+    } catch (err: any) {
+      setError(`Failed to update decision: ${err.response?.data?.message ?? err.message}`);
     }
   };
 
@@ -143,7 +154,7 @@ export default function ShortlistPage() {
       {entries.length > 0 && (
         <div className="space-y-3">
           {entries.map((entry) => (
-            <ShortlistCard key={entry.candidate_id} entry={entry} onDecide={decide} />
+            <ShortlistCard key={entry.candidateId} entry={entry} onDecide={decide} />
           ))}
         </div>
       )}
@@ -171,11 +182,11 @@ function ShortlistCard({
         <div className="flex items-center gap-3">
           <span className="text-xs font-bold text-gray-400">#{entry.rank}</span>
           <span className="font-medium text-gray-800">
-            {entry.candidate_name ?? entry.candidate_id}
+            {entry.candidateName ?? entry.candidateId}
           </span>
         </div>
         <span className="text-sm font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">
-          {Math.round(entry.fit_score)}
+          {Math.round(Number(entry.fitScore))}
         </span>
       </div>
 
@@ -185,7 +196,7 @@ function ShortlistCard({
         {(['accepted', 'rejected', 'deferred'] as const).map((d) => (
           <button
             key={d}
-            onClick={() => onDecide(entry.candidate_id, d)}
+            onClick={() => onDecide(entry.candidateId, d)}
             className={`px-3 py-1 rounded-md text-xs font-medium border transition-colors ${
               entry.decision === d
                 ? decisionButtonActive(d)

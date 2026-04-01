@@ -46,7 +46,13 @@ export default function JobsPage() {
           stopPolling();
           setStatus('parsed');
           const { data: crit } = await api.get(`/jobs/${id}/criteria`);
-          setCriteria(crit);
+          setCriteria({
+            required_skills: crit.required_skills ?? crit.requiredSkills ?? [],
+            preferred_skills: crit.preferred_skills ?? crit.preferredSkills ?? [],
+            experience_level: crit.experience_level ?? crit.experienceLevel ?? 'mid',
+            responsibilities: crit.responsibilities ?? [],
+            custom_criteria: crit.custom_criteria ?? crit.customCriteria ?? [],
+          });
         } else if (data.status === 'error') {
           stopPolling();
           setStatus('error');
@@ -276,7 +282,7 @@ function SkillList({
   return (
     <div>
       <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
-      {skills.map((s, i) => (
+      {(skills ?? []).map((s, i) => (
         <div key={i} className="flex gap-2 mb-2">
           <input
             value={s}

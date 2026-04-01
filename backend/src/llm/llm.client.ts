@@ -9,8 +9,8 @@ import {
   EmbeddingResult,
 } from './llm.types';
 
-const EMBEDDING_MODEL = 'text-embedding-ada-002';
-const CHAT_MODEL = 'gpt-4o';
+const EMBEDDING_MODEL = 'embedding-model';
+const CHAT_MODEL = 'gpt-5.3-chat';
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 500;
 
@@ -74,8 +74,7 @@ export class LlmClient {
       const response = await this.openai.chat.completions.create({
         model: this.chatDeployment,
         messages,
-        temperature: options.temperature ?? 0.2,
-        max_tokens: options.maxTokens,
+        ...(options.maxTokens ? { max_completion_tokens: options.maxTokens } : {}),
         response_format:
           options.responseFormat === 'json_object'
             ? { type: 'json_object' }

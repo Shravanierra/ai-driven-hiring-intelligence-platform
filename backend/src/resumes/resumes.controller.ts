@@ -10,7 +10,8 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { ResumesService, ResumeUploadResult } from './resumes.service';
+import { ResumesService, FailureEntry } from './resumes.service';
+import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
 import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
@@ -37,7 +38,7 @@ export class ResumesController {
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @UploadedFiles() files: Express.Multer.File[],
     @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
-  ): Promise<ResumeUploadResult> {
+  ): Promise<{ profiles: CandidateProfile[]; failures: FailureEntry[] }> {
     if (!files || files.length === 0) {
       throw new BadRequestException('At least one file must be provided');
     }
@@ -52,7 +53,7 @@ export class ResumesController {
   async listCandidates(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
-  ): Promise<string[]> {
+  ): Promise<CandidateProfile[]> {
     return this.resumesService.listCandidates(jobId, recruiter.recruiterId);
   }
 
@@ -64,7 +65,7 @@ export class ResumesController {
   async getCandidate(
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
     @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
-  ): Promise<string> {
+  ): Promise<CandidateProfile> {
     return this.resumesService.getCandidate(candidateId, recruiter.recruiterId);
   }
 }

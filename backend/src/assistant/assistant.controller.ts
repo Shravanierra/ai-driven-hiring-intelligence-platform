@@ -8,12 +8,15 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { AssistantService } from './assistant.service';
 import { AssistantSession } from '../entities/assistant-session.entity';
 import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
 import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 class QueryDto {
+  @IsString()
+  @IsNotEmpty()
   query: string;
 }
 

@@ -22,13 +22,15 @@ const fit_score_entity_1 = require("../entities/fit-score.entity");
 const candidate_profile_entity_1 = require("../entities/candidate-profile.entity");
 const job_description_entity_1 = require("../entities/job-description.entity");
 const llm_client_1 = require("../llm/llm.client");
+const scoring_service_1 = require("../scoring/scoring.service");
 let ShortlistService = ShortlistService_1 = class ShortlistService {
-    constructor(shortlistRepo, fitScoreRepo, profileRepo, jobRepo, llmClient) {
+    constructor(shortlistRepo, fitScoreRepo, profileRepo, jobRepo, llmClient, scoringService) {
         this.shortlistRepo = shortlistRepo;
         this.fitScoreRepo = fitScoreRepo;
         this.profileRepo = profileRepo;
         this.jobRepo = jobRepo;
         this.llmClient = llmClient;
+        this.scoringService = scoringService;
         this.logger = new common_1.Logger(ShortlistService_1.name);
     }
     async generateShortlist(jobId, size, filters, recruiterId) {
@@ -44,9 +46,14 @@ let ShortlistService = ShortlistService_1 = class ShortlistService {
         if (size < 1 || size > 50) {
             throw new common_1.BadRequestException('size must be between 1 and 50');
         }
-        const fitScores = await this.fitScoreRepo.find({ where: { jobId } });
+        let fitScores = await this.fitScoreRepo.find({ where: { jobId } });
         if (fitScores.length === 0) {
-            throw new common_1.NotFoundException(`No fit scores found for job "${jobId}"`);
+            this.logger.log(`No fit scores for job ${jobId}, triggering auto-score...`);
+            await this.scoringService.rescoreAll(jobId);
+            fitScores = await this.fitScoreRepo.find({ where: { jobId } });
+        }
+        if (fitScores.length === 0) {
+            throw new common_1.NotFoundException(`No candidates found for job "${jobId}". Upload resumes first.`);
         }
         const candidateIds = fitScores.map((fs) => fs.candidateId);
         const profiles = await this.profileRepo.findByIds(candidateIds);
@@ -159,6 +166,7 @@ exports.ShortlistService = ShortlistService = ShortlistService_1 = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        llm_client_1.LlmClient])
+        llm_client_1.LlmClient,
+        scoring_service_1.ScoringService])
 ], ShortlistService);
 //# sourceMappingURL=shortlist.service.js.map

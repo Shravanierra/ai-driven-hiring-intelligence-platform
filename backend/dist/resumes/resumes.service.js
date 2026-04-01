@@ -25,7 +25,6 @@ const uuid_1 = require("uuid");
 const candidate_profile_entity_1 = require("../entities/candidate-profile.entity");
 const job_description_entity_1 = require("../entities/job-description.entity");
 const llm_client_1 = require("../llm/llm.client");
-const candidate_profile_serializer_1 = require("../candidate-profile/candidate-profile.serializer");
 const skill_extractor_service_1 = require("./skill-extractor.service");
 const summary_generator_service_1 = require("./summary-generator.service");
 const SUPPORTED_MIME_TYPES = [
@@ -54,54 +53,41 @@ let ResumesService = ResumesService_1 = class ResumesService {
     }
     async uploadBatch(jobId, files, recruiterId) {
         const job = await this.jobRepo.findOne({ where: { id: jobId } });
-        if (!job) {
+        if (!job)
             throw new common_1.NotFoundException(`Job description with id "${jobId}" not found`);
-        }
-        if (job.recruiterId !== recruiterId) {
+        if (job.recruiterId !== recruiterId)
             throw new common_1.ForbiddenException(`You do not have access to job "${jobId}"`);
-        }
         const batch = files.slice(0, MAX_BATCH_SIZE);
         const profiles = [];
         const failures = [];
         for (const file of batch) {
             try {
                 const profile = await this.processResume(jobId, file);
-                profiles.push((0, candidate_profile_serializer_1.serializeCandidateProfile)(profile));
+                profiles.push(profile);
             }
             catch (err) {
                 this.logger.warn(`Failed to process resume "${file.originalname}": ${err.message}`);
-                failures.push({
-                    filename: file.originalname,
-                    error: err.message,
-                });
+                failures.push({ filename: file.originalname, error: err.message });
             }
         }
         return { profiles, failures };
     }
     async listCandidates(jobId, recruiterId) {
         const job = await this.jobRepo.findOne({ where: { id: jobId } });
-        if (!job) {
+        if (!job)
             throw new common_1.NotFoundException(`Job description with id "${jobId}" not found`);
-        }
-        if (job.recruiterId !== recruiterId) {
+        if (job.recruiterId !== recruiterId)
             throw new common_1.ForbiddenException(`You do not have access to job "${jobId}"`);
-        }
-        const profiles = await this.profileRepo.find({
-            where: { jobId },
-            order: { createdAt: 'DESC' },
-        });
-        return profiles.map(candidate_profile_serializer_1.serializeCandidateProfile);
+        return this.profileRepo.find({ where: { jobId }, order: { createdAt: 'DESC' } });
     }
     async getCandidate(candidateId, recruiterId) {
         const profile = await this.profileRepo.findOne({ where: { id: candidateId } });
-        if (!profile) {
+        if (!profile)
             throw new common_1.NotFoundException(`Candidate with id "${candidateId}" not found`);
-        }
         const job = await this.jobRepo.findOne({ where: { id: profile.jobId } });
-        if (!job || job.recruiterId !== recruiterId) {
+        if (!job || job.recruiterId !== recruiterId)
             throw new common_1.ForbiddenException(`You do not have access to candidate "${candidateId}"`);
-        }
-        return (0, candidate_profile_serializer_1.serializeCandidateProfile)(profile);
+        return profile;
     }
     async processResume(jobId, file) {
         if (!SUPPORTED_MIME_TYPES.includes(file.mimetype)) {

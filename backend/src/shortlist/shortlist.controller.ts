@@ -8,17 +8,26 @@ import {
   ParseUUIDPipe,
   BadRequestException,
 } from '@nestjs/common';
+import { IsNumber, IsObject, IsOptional, IsString, IsIn, Max, Min } from 'class-validator';
 import { ShortlistService, ShortlistFilters } from './shortlist.service';
 import { ShortlistEntry, ShortlistDecision } from '../entities/shortlist-entry.entity';
 import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
 import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
 
 class GenerateShortlistDto {
+  @IsNumber()
+  @Min(1)
+  @Max(50)
   size: number;
+
+  @IsOptional()
+  @IsObject()
   filters?: ShortlistFilters;
 }
 
 class UpdateDecisionDto {
+  @IsString()
+  @IsIn(['accepted', 'rejected', 'deferred'])
   decision: ShortlistDecision;
 }
 

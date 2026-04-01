@@ -16,8 +16,6 @@ exports.InterviewKitController = void 0;
 const common_1 = require("@nestjs/common");
 const interview_kit_service_1 = require("./interview-kit.service");
 const current_recruiter_decorator_1 = require("../auth/current-recruiter.decorator");
-class UpdateInterviewKitDto {
-}
 const VALID_TYPES = ['behavioral', 'technical', 'gap'];
 let InterviewKitController = class InterviewKitController {
     constructor(interviewKitService) {
@@ -35,16 +33,13 @@ let InterviewKitController = class InterviewKitController {
         }
         for (const q of body.questions) {
             if (!VALID_TYPES.includes(q.type)) {
-                throw new common_1.BadRequestException(`Invalid question type "${q.type}". Must be one of: ${VALID_TYPES.join(', ')}`);
+                throw new common_1.BadRequestException(`Invalid question type "${q.type}"`);
             }
-            if (!q.text || q.text.trim().length === 0) {
-                throw new common_1.BadRequestException('Each question must have a non-empty text field');
+            if (!q.text?.trim()) {
+                throw new common_1.BadRequestException('Each question must have non-empty text');
             }
-            if (!q.rubric ||
-                !q.rubric.strong?.trim() ||
-                !q.rubric.adequate?.trim() ||
-                !q.rubric.weak?.trim()) {
-                throw new common_1.BadRequestException('Each question must have a rubric with non-empty strong, adequate, and weak fields');
+            if (!q.rubric?.strong?.trim() || !q.rubric?.adequate?.trim() || !q.rubric?.weak?.trim()) {
+                throw new common_1.BadRequestException('Each question rubric must have non-empty strong, adequate, and weak fields');
             }
         }
         return this.interviewKitService.updateKit(jobId, candidateId, body.questions, recruiter.recruiterId);
@@ -82,10 +77,10 @@ __decorate([
     (0, common_1.Put)(':job_id/candidates/:candidate_id/interview-kit'),
     __param(0, (0, common_1.Param)('job_id', new common_1.ParseUUIDPipe())),
     __param(1, (0, common_1.Param)('candidate_id', new common_1.ParseUUIDPipe())),
-    __param(2, (0, common_1.Body)()),
+    __param(2, (0, common_1.Body)(new common_1.ValidationPipe({ whitelist: false, forbidNonWhitelisted: false }))),
     __param(3, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, UpdateInterviewKitDto, Object]),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], InterviewKitController.prototype, "updateKit", null);
 __decorate([

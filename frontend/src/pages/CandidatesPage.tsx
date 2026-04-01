@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
 
@@ -35,45 +35,121 @@ export default function CandidatesPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  // Upload state
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{ added: number; failed: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const loadCandidates = useCallback(async () => {
     if (!jobId) return;
     setLoading(true);
     setError('');
-    api
-      .get(`/jobs/${jobId}/candidates`)
-      .then(async ({ data }) => {
-        const list: Candidate[] = data;
-        // Fetch scores and bias flags in parallel
-        const enriched = await Promise.all(
-          list.map(async (c) => {
-            const [scoreRes, biasRes] = await Promise.allSettled([
-              api.get(`/jobs/${jobId}/candidates/${c.id}/score`),
-              api.get(`/jobs/${jobId}/candidates/${c.id}/bias`),
-            ]);
-            return {
-              ...c,
-              fitScore: scoreRes.status === 'fulfilled' ? scoreRes.value.data : undefined,
-              biasFlags: biasRes.status === 'fulfilled' ? biasRes.value.data : [],
-            };
-          }),
-        );
-        setCandidates(enriched);
-      })
-      .catch(() => setError('Failed to load candidates'))
-      .finally(() => setLoading(false));
+    try {
+      const { data } = await api.get(`/jobs/${jobId}/candidates`);
+      const list: Candidate[] = Array.isArray(data) ? data : [];
+      const enriched = await Promise.all(
+        list.map(async (c) => {
+          const [scoreRes, biasRes] = await Promise.allSettled([
+            api.get(`/jobs/${jobId}/candidates/${c.id}/score`),
+            api.get(`/jobs/${jobId}/candidates/${c.id}/bias`),
+          ]);
+          return {
+            ...c,
+            fitScore: scoreRes.status === 'fulfilled' ? scoreRes.value.data : undefined,
+            biasFlags: biasRes.status === 'fulfilled' ? biasRes.value.data : [],
+          };
+        }),
+      );
+      setCandidates(enriched);
+    } catch {
+      setError('Failed to load candidates');
+    } finally {
+      setLoading(false);
+    }
+  }, [jobId]);
+
+  useEffect(() => { loadCandidates(); }, [loadCandidates]);
+
+  const uploadFiles = async (files: FileList | File[]) => {
+    if (!jobId || !files.length) return;
+    setUploading(true);
+    setUploadResult(null);
+    const form = new FormData();
+    Array.from(files).forEach((f) => form.append('files', f));
+    try {
+      const { data } = await api.post(`/jobs/${jobId}/resumes`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setUploadResult({
+        added: (data.profiles ?? []).length,
+        failed: (data.failures ?? []).length,
+      });
+      await loadCandidates();
+    } catch {
+      setError('Resume upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
   }, [jobId]);
 
   if (!jobId) {
     return <EmptyState message="Upload a job description first to see candidates." />;
   }
 
-  if (loading) return <p className="text-gray-500">Loading candidates…</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!candidates.length) return <EmptyState message="No candidates found for this job." />;
-
   return (
-    <div className="max-w-4xl mx-auto space-y-4">
+    <div className="max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
+
+      {/* Resume upload zone */}
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={onDrop}
+        onClick={() => fileInputRef.current?.click()}
+        className={`border-2 border-dashed rounded-xl px-8 py-6 text-center cursor-pointer transition-colors ${
+          dragging ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400'
+        }`}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.docx,.txt"
+          multiple
+          className="hidden"
+          onChange={(e) => e.target.files && uploadFiles(e.target.files)}
+        />
+        <p className="text-sm text-gray-500">
+          {uploading
+            ? 'Uploading resumes…'
+            : <>Drag &amp; drop resumes here, or <span className="text-indigo-600 font-medium">click to browse</span> (PDF, DOCX, TXT — up to 500 files)</>
+          }
+        </p>
+        {uploadResult && (
+          <p className="mt-2 text-xs">
+            <span className="text-green-600 font-medium">{uploadResult.added} added</span>
+            {uploadResult.failed > 0 && (
+              <span className="text-red-500 ml-2">{uploadResult.failed} failed</span>
+            )}
+          </p>
+        )}
+      </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {loading && <p className="text-gray-500 text-sm">Loading candidates…</p>}
+
+      {!loading && candidates.length === 0 && (
+        <p className="text-center text-gray-400 py-10 text-sm">
+          No candidates yet — upload resumes above.
+        </p>
+      )}
+
       {candidates.map((c) => (
         <CandidateCard
           key={c.id}
@@ -86,14 +162,8 @@ export default function CandidatesPage() {
   );
 }
 
-function CandidateCard({
-  candidate,
-  expanded,
-  onToggle,
-}: {
-  candidate: Candidate;
-  expanded: boolean;
-  onToggle: () => void;
+function CandidateCard({ candidate, expanded, onToggle }: {
+  candidate: Candidate; expanded: boolean; onToggle: () => void;
 }) {
   const hasBias = (candidate.biasFlags?.length ?? 0) > 0;
   const score = candidate.fitScore?.score;
@@ -106,7 +176,7 @@ function CandidateCard({
       >
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm">
-            {candidate.name.charAt(0).toUpperCase()}
+            {(candidate.name ?? '?').charAt(0).toUpperCase()}
           </div>
           <div>
             <p className="font-medium text-gray-800">{candidate.name}</p>
@@ -119,16 +189,13 @@ function CandidateCard({
               ⚠ Bias flags
             </span>
           )}
-          {score !== undefined && (
-            <ScoreBadge score={score} />
-          )}
+          {score !== undefined && <ScoreBadge score={score} />}
           <span className="text-gray-400 text-sm">{expanded ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {expanded && (
         <div className="border-t border-gray-100 px-5 py-4 space-y-4">
-          {/* Score breakdown */}
           {candidate.fitScore && (
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Score Breakdown</h3>
@@ -148,17 +215,12 @@ function CandidateCard({
               </div>
             </div>
           )}
-
-          {/* Bias flags */}
           {hasBias && (
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Bias Warnings</h3>
               <div className="space-y-2">
                 {candidate.biasFlags!.map((flag, i) => (
-                  <div
-                    key={i}
-                    className={`rounded-md px-3 py-2 text-xs border ${severityClass(flag.severity)}`}
-                  >
+                  <div key={i} className={`rounded-md px-3 py-2 text-xs border ${severityClass(flag.severity)}`}>
                     <span className="font-semibold">{flag.signal_type}</span>: {flag.description}
                   </div>
                 ))}
@@ -172,22 +234,12 @@ function CandidateCard({
 }
 
 function ScoreBadge({ score }: { score: number }) {
-  const color =
-    score >= 75 ? 'bg-green-100 text-green-800' :
-    score >= 50 ? 'bg-yellow-100 text-yellow-800' :
-    'bg-red-100 text-red-800';
-  return (
-    <span className={`text-sm font-bold px-2.5 py-0.5 rounded-full ${color}`}>
-      {Math.round(score)}
-    </span>
-  );
+  const color = score >= 75 ? 'bg-green-100 text-green-800' : score >= 50 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800';
+  return <span className={`text-sm font-bold px-2.5 py-0.5 rounded-full ${color}`}>{Math.round(score)}</span>;
 }
 
 function StatusDot({ status }: { status: string }) {
-  const color =
-    status === 'met' ? 'bg-green-500' :
-    status === 'partial' ? 'bg-yellow-400' :
-    'bg-red-400';
+  const color = status === 'met' ? 'bg-green-500' : status === 'partial' ? 'bg-yellow-400' : 'bg-red-400';
   return <span className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${color}`} />;
 }
 
@@ -198,9 +250,5 @@ function severityClass(severity: string) {
 }
 
 function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="text-center py-20 text-gray-400">
-      <p>{message}</p>
-    </div>
-  );
+  return <div className="text-center py-20 text-gray-400"><p>{message}</p></div>;
 }

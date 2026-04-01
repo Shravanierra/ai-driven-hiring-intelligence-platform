@@ -12,6 +12,7 @@ import { FitScore } from '../entities/fit-score.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
+import { ScoringService } from '../scoring/scoring.service';
 
 export interface ShortlistFilters {
   minExperience?: number;
@@ -32,6 +33,7 @@ export class ShortlistService {
     @InjectRepository(JobDescription)
     private readonly jobRepo: Repository<JobDescription>,
     private readonly llmClient: LlmClient,
+    private readonly scoringService: ScoringService,
   ) {}
 
   async generateShortlist(
@@ -53,10 +55,15 @@ export class ShortlistService {
       throw new BadRequestException('size must be between 1 and 50');
     }
 
-    // Fetch all FitScore records for the job
-    const fitScores = await this.fitScoreRepo.find({ where: { jobId } });
+    // Fetch all FitScore records for the job — auto-score if none exist
+    let fitScores = await this.fitScoreRepo.find({ where: { jobId } });
     if (fitScores.length === 0) {
-      throw new NotFoundException(`No fit scores found for job "${jobId}"`);
+      this.logger.log(`No fit scores for job ${jobId}, triggering auto-score...`);
+      await this.scoringService.rescoreAll(jobId);
+      fitScores = await this.fitScoreRepo.find({ where: { jobId } });
+    }
+    if (fitScores.length === 0) {
+      throw new NotFoundException(`No candidates found for job "${jobId}". Upload resumes first.`);
     }
 
     // Load candidate profiles for filtering

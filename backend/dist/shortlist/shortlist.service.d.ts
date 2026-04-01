@@ -4,6 +4,7 @@ import { FitScore } from '../entities/fit-score.entity';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
+import { ScoringService } from '../scoring/scoring.service';
 export interface ShortlistFilters {
     minExperience?: number;
     requiredSkill?: string;
@@ -14,8 +15,9 @@ export declare class ShortlistService {
     private readonly profileRepo;
     private readonly jobRepo;
     private readonly llmClient;
+    private readonly scoringService;
     private readonly logger;
-    constructor(shortlistRepo: Repository<ShortlistEntry>, fitScoreRepo: Repository<FitScore>, profileRepo: Repository<CandidateProfile>, jobRepo: Repository<JobDescription>, llmClient: LlmClient);
+    constructor(shortlistRepo: Repository<ShortlistEntry>, fitScoreRepo: Repository<FitScore>, profileRepo: Repository<CandidateProfile>, jobRepo: Repository<JobDescription>, llmClient: LlmClient, scoringService: ScoringService);
     generateShortlist(jobId: string, size: number, filters?: ShortlistFilters, recruiterId?: string): Promise<ShortlistEntry[]>;
     getShortlist(jobId: string, recruiterId?: string): Promise<ShortlistEntry[]>;
     updateDecision(jobId: string, candidateId: string, decision: ShortlistDecision, recruiterId?: string): Promise<ShortlistEntry>;

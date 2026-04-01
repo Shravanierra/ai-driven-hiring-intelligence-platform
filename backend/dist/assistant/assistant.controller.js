@@ -14,10 +14,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssistantController = void 0;
 const common_1 = require("@nestjs/common");
+const class_validator_1 = require("class-validator");
 const assistant_service_1 = require("./assistant.service");
 const current_recruiter_decorator_1 = require("../auth/current-recruiter.decorator");
 class QueryDto {
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], QueryDto.prototype, "query", void 0);
 let AssistantController = class AssistantController {
     constructor(assistantService) {
         this.assistantService = assistantService;

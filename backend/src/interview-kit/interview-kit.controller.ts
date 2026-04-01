@@ -8,16 +8,13 @@ import {
   ParseUUIDPipe,
   BadRequestException,
   Res,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InterviewKitService } from './interview-kit.service';
 import { InterviewKit, InterviewQuestion, QuestionType } from '../entities/interview-kit.entity';
 import { CurrentRecruiter } from '../auth/current-recruiter.decorator';
 import { AuthenticatedRecruiter } from '../auth/jwt.strategy';
-
-class UpdateInterviewKitDto {
-  questions: InterviewQuestion[];
-}
 
 const VALID_TYPES: QuestionType[] = ['behavioral', 'technical', 'gap'];
 
@@ -47,34 +44,24 @@ export class InterviewKitController {
   async updateKit(
     @Param('job_id', new ParseUUIDPipe()) jobId: string,
     @Param('candidate_id', new ParseUUIDPipe()) candidateId: string,
-    @Body() body: UpdateInterviewKitDto,
+    @Body(new ValidationPipe({ whitelist: false, forbidNonWhitelisted: false }))
+    body: { questions: InterviewQuestion[] },
     @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
   ): Promise<InterviewKit> {
     if (!Array.isArray(body.questions)) {
       throw new BadRequestException('questions must be an array');
     }
-
     for (const q of body.questions) {
       if (!VALID_TYPES.includes(q.type)) {
-        throw new BadRequestException(
-          `Invalid question type "${q.type}". Must be one of: ${VALID_TYPES.join(', ')}`,
-        );
+        throw new BadRequestException(`Invalid question type "${q.type}"`);
       }
-      if (!q.text || q.text.trim().length === 0) {
-        throw new BadRequestException('Each question must have a non-empty text field');
+      if (!q.text?.trim()) {
+        throw new BadRequestException('Each question must have non-empty text');
       }
-      if (
-        !q.rubric ||
-        !q.rubric.strong?.trim() ||
-        !q.rubric.adequate?.trim() ||
-        !q.rubric.weak?.trim()
-      ) {
-        throw new BadRequestException(
-          'Each question must have a rubric with non-empty strong, adequate, and weak fields',
-        );
+      if (!q.rubric?.strong?.trim() || !q.rubric?.adequate?.trim() || !q.rubric?.weak?.trim()) {
+        throw new BadRequestException('Each question rubric must have non-empty strong, adequate, and weak fields');
       }
     }
-
     return this.interviewKitService.updateKit(jobId, candidateId, body.questions, recruiter.recruiterId);
   }
 

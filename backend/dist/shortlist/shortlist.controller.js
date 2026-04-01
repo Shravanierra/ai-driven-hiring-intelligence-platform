@@ -14,12 +14,29 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShortlistController = void 0;
 const common_1 = require("@nestjs/common");
+const class_validator_1 = require("class-validator");
 const shortlist_service_1 = require("./shortlist.service");
 const current_recruiter_decorator_1 = require("../auth/current-recruiter.decorator");
 class GenerateShortlistDto {
 }
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(50),
+    __metadata("design:type", Number)
+], GenerateShortlistDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", Object)
+], GenerateShortlistDto.prototype, "filters", void 0);
 class UpdateDecisionDto {
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['accepted', 'rejected', 'deferred']),
+    __metadata("design:type", String)
+], UpdateDecisionDto.prototype, "decision", void 0);
 const ALLOWED_DECISIONS = ['accepted', 'rejected', 'deferred'];
 let ShortlistController = class ShortlistController {
     constructor(shortlistService) {

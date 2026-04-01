@@ -9,7 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { CandidateProfile } from '../entities/candidate-profile.entity';
 import { JobDescription } from '../entities/job-description.entity';
 import { LlmClient } from '../llm/llm.client';
-import { serializeCandidateProfile } from '../candidate-profile/candidate-profile.serializer';
 import { SkillExtractorService } from './skill-extractor.service';
 import { SummaryGeneratorService } from './summary-generator.service';
 
@@ -20,11 +19,6 @@ const SUPPORTED_MIME_TYPES = [
 ];
 
 const MAX_BATCH_SIZE = 500;
-
-export interface ResumeUploadResult {
-  profiles: string[];
-  failures: FailureEntry[];
-}
 
 export interface FailureEntry {
   filename: string;
@@ -61,66 +55,42 @@ export class ResumesService {
     jobId: string,
     files: Express.Multer.File[],
     recruiterId: string,
-  ): Promise<ResumeUploadResult> {
-    // Verify job exists and belongs to recruiter
+  ): Promise<{ profiles: CandidateProfile[]; failures: FailureEntry[] }> {
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
-    if (!job) {
-      throw new NotFoundException(`Job description with id "${jobId}" not found`);
-    }
-    if (job.recruiterId !== recruiterId) {
-      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
-    }
+    if (!job) throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    if (job.recruiterId !== recruiterId) throw new ForbiddenException(`You do not have access to job "${jobId}"`);
 
     const batch = files.slice(0, MAX_BATCH_SIZE);
-    const profiles: string[] = [];
+    const profiles: CandidateProfile[] = [];
     const failures: FailureEntry[] = [];
 
     for (const file of batch) {
       try {
         const profile = await this.processResume(jobId, file);
-        profiles.push(serializeCandidateProfile(profile));
+        profiles.push(profile);
       } catch (err) {
-        this.logger.warn(
-          `Failed to process resume "${file.originalname}": ${(err as Error).message}`,
-        );
-        failures.push({
-          filename: file.originalname,
-          error: (err as Error).message,
-        });
+        this.logger.warn(`Failed to process resume "${file.originalname}": ${(err as Error).message}`);
+        failures.push({ filename: file.originalname, error: (err as Error).message });
       }
     }
 
     return { profiles, failures };
   }
 
-  async listCandidates(jobId: string, recruiterId: string): Promise<string[]> {
+  async listCandidates(jobId: string, recruiterId: string): Promise<CandidateProfile[]> {
     const job = await this.jobRepo.findOne({ where: { id: jobId } });
-    if (!job) {
-      throw new NotFoundException(`Job description with id "${jobId}" not found`);
-    }
-    if (job.recruiterId !== recruiterId) {
-      throw new ForbiddenException(`You do not have access to job "${jobId}"`);
-    }
+    if (!job) throw new NotFoundException(`Job description with id "${jobId}" not found`);
+    if (job.recruiterId !== recruiterId) throw new ForbiddenException(`You do not have access to job "${jobId}"`);
 
-    const profiles = await this.profileRepo.find({
-      where: { jobId },
-      order: { createdAt: 'DESC' },
-    });
-
-    return profiles.map(serializeCandidateProfile);
+    return this.profileRepo.find({ where: { jobId }, order: { createdAt: 'DESC' } });
   }
 
-  async getCandidate(candidateId: string, recruiterId: string): Promise<string> {
+  async getCandidate(candidateId: string, recruiterId: string): Promise<CandidateProfile> {
     const profile = await this.profileRepo.findOne({ where: { id: candidateId } });
-    if (!profile) {
-      throw new NotFoundException(`Candidate with id "${candidateId}" not found`);
-    }
-    // Verify the parent job belongs to the recruiter
+    if (!profile) throw new NotFoundException(`Candidate with id "${candidateId}" not found`);
     const job = await this.jobRepo.findOne({ where: { id: profile.jobId } });
-    if (!job || job.recruiterId !== recruiterId) {
-      throw new ForbiddenException(`You do not have access to candidate "${candidateId}"`);
-    }
-    return serializeCandidateProfile(profile);
+    if (!job || job.recruiterId !== recruiterId) throw new ForbiddenException(`You do not have access to candidate "${candidateId}"`);
+    return profile;
   }
 
   private async processResume(
