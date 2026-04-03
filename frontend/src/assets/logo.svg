@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Hexagon icon -->
+  <polygon points="20,4 36,13 36,31 20,40 4,31 4,13" fill="#4f46e5" opacity="0.15"/>
+  <polygon points="20,8 32,15 32,29 20,36 8,29 8,15" fill="#4f46e5" opacity="0.3"/>
+  <!-- Brain/circuit nodes inside hex -->
+  <circle cx="20" cy="22" r="3" fill="#4f46e5"/>
+  <circle cx="13" cy="18" r="2" fill="#6366f1"/>
+  <circle cx="27" cy="18" r="2" fill="#6366f1"/>
+  <circle cx="13" cy="26" r="2" fill="#6366f1"/>
+  <circle cx="27" cy="26" r="2" fill="#6366f1"/>
+  <line x1="20" y1="22" x2="13" y2="18" stroke="#4f46e5" stroke-width="1.2"/>
+  <line x1="20" y1="22" x2="27" y2="18" stroke="#4f46e5" stroke-width="1.2"/>
+  <line x1="20" y1="22" x2="13" y2="26" stroke="#4f46e5" stroke-width="1.2"/>
+  <line x1="20" y1="22" x2="27" y2="26" stroke="#4f46e5" stroke-width="1.2"/>
+  <line x1="13" y1="18" x2="13" y2="26" stroke="#818cf8" stroke-width="0.8"/>
+  <line x1="27" y1="18" x2="27" y2="26" stroke="#818cf8" stroke-width="0.8"/>
+  <!-- Wordmark -->
+  <text x="46" y="28" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e1b4b">Hire</text>
+  <text x="84" y="28" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="#4f46e5">IQ</text>
+  <text x="46" y="40" font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="400" letter-spacing="2" fill="#6b7280">AI HIRING PLATFORM</text>
+</svg>

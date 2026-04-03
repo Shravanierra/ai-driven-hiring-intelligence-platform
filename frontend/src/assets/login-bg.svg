@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0c29"/>
+      <stop offset="50%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="30%" cy="40%" r="40%">
+      <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="75%" cy="65%" r="35%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Base gradient background -->
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <!-- Ambient glows -->
+  <rect width="1440" height="900" fill="url(#glow1)"/>
+  <rect width="1440" height="900" fill="url(#glow2)"/>
+
+  <!-- Grid lines (subtle) -->
+  <g stroke="#4f46e5" stroke-opacity="0.07" stroke-width="1">
+    <line x1="0" y1="100" x2="1440" y2="100"/>
+    <line x1="0" y1="200" x2="1440" y2="200"/>
+    <line x1="0" y1="300" x2="1440" y2="300"/>
+    <line x1="0" y1="400" x2="1440" y2="400"/>
+    <line x1="0" y1="500" x2="1440" y2="500"/>
+    <line x1="0" y1="600" x2="1440" y2="600"/>
+    <line x1="0" y1="700" x2="1440" y2="700"/>
+    <line x1="0" y1="800" x2="1440" y2="800"/>
+    <line x1="180" y1="0" x2="180" y2="900"/>
+    <line x1="360" y1="0" x2="360" y2="900"/>
+    <line x1="540" y1="0" x2="540" y2="900"/>
+    <line x1="720" y1="0" x2="720" y2="900"/>
+    <line x1="900" y1="0" x2="900" y2="900"/>
+    <line x1="1080" y1="0" x2="1080" y2="900"/>
+    <line x1="1260" y1="0" x2="1260" y2="900"/>
+  </g>
+
+  <!-- Network nodes and connections — left cluster -->
+  <g filter="url(#blur)">
+    <line x1="120" y1="200" x2="280" y2="320" stroke="#818cf8" stroke-opacity="0.4" stroke-width="1"/>
+    <line x1="280" y1="320" x2="180" y2="480" stroke="#818cf8" stroke-opacity="0.4" stroke-width="1"/>
+    <line x1="180" y1="480" x2="350" y2="560" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="280" y1="320" x2="420" y2="260" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="420" y1="260" x2="550" y2="380" stroke="#818cf8" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="120" y1="200" x2="60" y2="350" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="60" y1="350" x2="180" y2="480" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1"/>
+  </g>
+
+  <!-- Network nodes and connections — right cluster -->
+  <g filter="url(#blur)">
+    <line x1="1100" y1="150" x2="1280" y2="280" stroke="#a78bfa" stroke-opacity="0.35" stroke-width="1"/>
+    <line x1="1280" y1="280" x2="1380" y2="180" stroke="#a78bfa" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="1280" y1="280" x2="1200" y2="450" stroke="#a78bfa" stroke-opacity="0.35" stroke-width="1"/>
+    <line x1="1200" y1="450" x2="1350" y2="520" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="1100" y1="150" x2="950" y2="250" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="950" y1="250" x2="1050" y2="400" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="1050" y1="400" x2="1200" y2="450" stroke="#a78bfa" stroke-opacity="0.3" stroke-width="1"/>
+  </g>
+
+  <!-- Bottom cluster -->
+  <g filter="url(#blur)">
+    <line x1="300" y1="700" x2="500" y2="780" stroke="#6366f1" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="500" y1="780" x2="700" y2="720" stroke="#6366f1" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="700" y1="720" x2="900" y2="800" stroke="#6366f1" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="900" y1="800" x2="1100" y2="740" stroke="#6366f1" stroke-opacity="0.25" stroke-width="1"/>
+    <line x1="300" y1="700" x2="200" y2="820" stroke="#6366f1" stroke-opacity="0.2" stroke-width="1"/>
+  </g>
+
+  <!-- Node dots — left cluster -->
+  <circle cx="120" cy="200" r="4" fill="#818cf8" fill-opacity="0.7"/>
+  <circle cx="280" cy="320" r="6" fill="#6366f1" fill-opacity="0.8"/>
+  <circle cx="180" cy="480" r="4" fill="#818cf8" fill-opacity="0.6"/>
+  <circle cx="350" cy="560" r="3" fill="#a78bfa" fill-opacity="0.5"/>
+  <circle cx="420" cy="260" r="5" fill="#6366f1" fill-opacity="0.7"/>
+  <circle cx="550" cy="380" r="3" fill="#818cf8" fill-opacity="0.5"/>
+  <circle cx="60" cy="350" r="4" fill="#a78bfa" fill-opacity="0.6"/>
+
+  <!-- Node dots — right cluster -->
+  <circle cx="1100" cy="150" r="5" fill="#a78bfa" fill-opacity="0.7"/>
+  <circle cx="1280" cy="280" r="7" fill="#7c3aed" fill-opacity="0.8"/>
+  <circle cx="1380" cy="180" r="3" fill="#818cf8" fill-opacity="0.5"/>
+  <circle cx="1200" cy="450" r="5" fill="#a78bfa" fill-opacity="0.7"/>
+  <circle cx="1350" cy="520" r="3" fill="#6366f1" fill-opacity="0.5"/>
+  <circle cx="950" cy="250" r="4" fill="#818cf8" fill-opacity="0.6"/>
+  <circle cx="1050" cy="400" r="4" fill="#a78bfa" fill-opacity="0.6"/>
+
+  <!-- Node dots — bottom cluster -->
+  <circle cx="300" cy="700" r="4" fill="#6366f1" fill-opacity="0.6"/>
+  <circle cx="500" cy="780" r="5" fill="#818cf8" fill-opacity="0.6"/>
+  <circle cx="700" cy="720" r="4" fill="#6366f1" fill-opacity="0.6"/>
+  <circle cx="900" cy="800" r="4" fill="#a78bfa" fill-opacity="0.5"/>
+  <circle cx="1100" cy="740" r="3" fill="#818cf8" fill-opacity="0.5"/>
+  <circle cx="200" cy="820" r="3" fill="#6366f1" fill-opacity="0.4"/>
+
+  <!-- Floating hexagons (decorative) -->
+  <polygon points="680,80 700,91 700,113 680,124 660,113 660,91" fill="none" stroke="#4f46e5" stroke-opacity="0.2" stroke-width="1"/>
+  <polygon points="1320,600 1345,614 1345,642 1320,656 1295,642 1295,614" fill="none" stroke="#7c3aed" stroke-opacity="0.2" stroke-width="1"/>
+  <polygon points="80,620 98,630 98,650 80,660 62,650 62,630" fill="none" stroke="#6366f1" stroke-opacity="0.2" stroke-width="1"/>
+  <polygon points="750,820 762,827 762,841 750,848 738,841 738,827" fill="none" stroke="#818cf8" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Subtle top highlight -->
+  <rect x="0" y="0" width="1440" height="2" fill="#6366f1" fill-opacity="0.4"/>
+</svg>

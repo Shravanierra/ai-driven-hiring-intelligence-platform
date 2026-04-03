@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
+    "lucide-react": "^1.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0"
@@ -44,19 +45,28 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
-    "setupFilesAfterFramework": ["@testing-library/jest-dom"],
-
+    "setupFilesAfterFramework": [
+      "@testing-library/jest-dom"
+    ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
       "^@/(.*)$": "<rootDir>/src/$1"
     },
     "transform": {
-      "^.+\\.(ts|tsx)$": ["ts-jest", {
-        "tsconfig": {
-          "jsx": "react-jsx"
+      "^.+\\.(ts|tsx)$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "jsx": "react-jsx"
+          }
         }
-      }]
+      ]
     },
-    "testMatch": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.test.ts", "**/*.test.tsx"]
+    "testMatch": [
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ]
   }
 }
