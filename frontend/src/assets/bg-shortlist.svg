@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#dcfce7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <!-- Podium / ranking shapes -->
+  <rect x="1050" y="400" width="100" height="220" rx="8" fill="#86efac" fill-opacity="0.25"/>
+  <rect x="1160" y="340" width="100" height="280" rx="8" fill="#4ade80" fill-opacity="0.2"/>
+  <rect x="940" y="450" width="100" height="170" rx="8" fill="#bbf7d0" fill-opacity="0.3"/>
+  <!-- Medal circles -->
+  <circle cx="1210" cy="310" r="28" fill="#fbbf24" fill-opacity="0.2"/>
+  <circle cx="1100" cy="370" r="22" fill="#9ca3af" fill-opacity="0.2"/>
+  <circle cx="990" cy="420" r="20" fill="#d97706" fill-opacity="0.15"/>
+  <!-- Checkmarks -->
+  <path d="M200 200 l15 15 l30-30" fill="none" stroke="#22c55e" stroke-opacity="0.2" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M200 270 l15 15 l30-30" fill="none" stroke="#22c55e" stroke-opacity="0.15" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M200 340 l15 15 l30-30" fill="none" stroke="#22c55e" stroke-opacity="0.12" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- List lines -->
+  <line x1="260" y1="210" x2="500" y2="210" stroke="#16a34a" stroke-opacity="0.1" stroke-width="6" stroke-linecap="round"/>
+  <line x1="260" y1="280" x2="460" y2="280" stroke="#16a34a" stroke-opacity="0.08" stroke-width="6" stroke-linecap="round"/>
+  <line x1="260" y1="350" x2="480" y2="350" stroke="#16a34a" stroke-opacity="0.08" stroke-width="6" stroke-linecap="round"/>
+  <!-- Star shapes -->
+  <polygon points="1350,100 1358,124 1384,124 1363,139 1371,163 1350,148 1329,163 1337,139 1316,124 1342,124" fill="#fbbf24" fill-opacity="0.12"/>
+  <polygon points="120,700 126,718 146,718 130,729 136,747 120,736 104,747 110,729 94,718 114,718" fill="#fbbf24" fill-opacity="0.1"/>
+  <!-- Dots -->
+  <g fill="#16a34a" fill-opacity="0.05">
+    <circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
+    <circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
+    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/>
+    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/>
+  </g>
+</svg>

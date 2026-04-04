@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <!-- Person silhouettes -->
+  <circle cx="1200" cy="160" r="45" fill="#a78bfa" fill-opacity="0.15"/>
+  <path d="M1155 260 q0-45 45-45 q45 0 45 45 z" fill="#a78bfa" fill-opacity="0.12"/>
+  <circle cx="1310" cy="200" r="35" fill="#c4b5fd" fill-opacity="0.15"/>
+  <path d="M1275 290 q0-35 35-35 q35 0 35 35 z" fill="#c4b5fd" fill-opacity="0.12"/>
+  <circle cx="1090" cy="210" r="30" fill="#ddd6fe" fill-opacity="0.2"/>
+  <path d="M1060 290 q0-30 30-30 q30 0 30 30 z" fill="#ddd6fe" fill-opacity="0.15"/>
+  <!-- Profile card outlines -->
+  <rect x="80" y="500" width="220" height="280" rx="16" fill="none" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="2"/>
+  <circle cx="190" cy="560" r="30" fill="#ede9fe" fill-opacity="0.5"/>
+  <line x1="120" y1="610" x2="260" y2="610" stroke="#7c3aed" stroke-opacity="0.1" stroke-width="5" stroke-linecap="round"/>
+  <line x1="130" y1="635" x2="250" y2="635" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="4" stroke-linecap="round"/>
+  <line x1="120" y1="660" x2="260" y2="660" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="4" stroke-linecap="round"/>
+  <!-- Skill tags -->
+  <rect x="900" y="600" width="90" height="26" rx="13" fill="#ddd6fe" fill-opacity="0.5"/>
+  <rect x="1000" y="600" width="70" height="26" rx="13" fill="#ede9fe" fill-opacity="0.5"/>
+  <rect x="920" y="640" width="110" height="26" rx="13" fill="#ddd6fe" fill-opacity="0.4"/>
+  <rect x="1040" y="640" width="80" height="26" rx="13" fill="#ede9fe" fill-opacity="0.4"/>
+  <!-- Dots -->
+  <g fill="#7c3aed" fill-opacity="0.05">
+    <circle cx="1300" cy="700" r="4"/><circle cx="1350" cy="700" r="4"/><circle cx="1400" cy="700" r="4"/>
+    <circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
+    <circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
+    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/>
+    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/>
+  </g>
+</svg>

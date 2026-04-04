@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
+import PageBackground from '../components/PageBackground';
+import bgJobs from '../assets/bg-jobs.svg';
 
 interface Criterion {
   label: string;
@@ -137,6 +139,7 @@ export default function JobsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
+      <PageBackground src={bgJobs} />
       <h1 className="text-2xl font-bold text-gray-800">Job Description Upload</h1>
 
       {/* Drop zone */}

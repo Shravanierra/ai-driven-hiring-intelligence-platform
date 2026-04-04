@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#fae8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <!-- Chat bubbles -->
+  <rect x="900" y="100" width="280" height="70" rx="20" fill="#e879f9" fill-opacity="0.1"/>
+  <polygon points="900,140 880,160 900,155" fill="#e879f9" fill-opacity="0.1"/>
+  <rect x="860" y="200" width="220" height="60" rx="20" fill="#d946ef" fill-opacity="0.08"/>
+  <polygon points="1080,230 1100,250 1080,245" fill="#d946ef" fill-opacity="0.08"/>
+  <rect x="920" y="290" width="260" height="70" rx="20" fill="#e879f9" fill-opacity="0.1"/>
+  <polygon points="920,330 900,350 920,345" fill="#e879f9" fill-opacity="0.1"/>
+  <!-- Neural network nodes -->
+  <circle cx="200" cy="400" r="8" fill="#a855f7" fill-opacity="0.15"/>
+  <circle cx="300" cy="350" r="6" fill="#c084fc" fill-opacity="0.15"/>
+  <circle cx="300" cy="450" r="6" fill="#c084fc" fill-opacity="0.15"/>
+  <circle cx="400" cy="300" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
+  <circle cx="400" cy="400" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
+  <circle cx="400" cy="500" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
+  <line x1="200" y1="400" x2="300" y2="350" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+  <line x1="200" y1="400" x2="300" y2="450" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+  <line x1="300" y1="350" x2="400" y2="300" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
+  <line x1="300" y1="350" x2="400" y2="400" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
+  <line x1="300" y1="450" x2="400" y2="400" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
+  <line x1="300" y1="450" x2="400" y2="500" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
+  <!-- Sparkle / AI stars -->
+  <path d="M1300 600 l5 15 l15 5 l-15 5 l-5 15 l-5-15 l-15-5 l15-5 z" fill="#e879f9" fill-opacity="0.15"/>
+  <path d="M150 700 l4 12 l12 4 l-12 4 l-4 12 l-4-12 l-12-4 l12-4 z" fill="#a855f7" fill-opacity="0.12"/>
+  <path d="M1380 200 l3 9 l9 3 l-9 3 l-3 9 l-3-9 l-9-3 l9-3 z" fill="#d946ef" fill-opacity="0.12"/>
+  <!-- Dots -->
+  <g fill="#a855f7" fill-opacity="0.05">
+    <circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
+    <circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
+    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/>
+    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/>
+  </g>
+</svg>

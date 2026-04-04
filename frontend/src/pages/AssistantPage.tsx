@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
+import PageBackground from '../components/PageBackground';
+import bgAssistant from '../assets/bg-assistant.svg';
 
 interface CandidateResult {
   id: string;
@@ -68,6 +70,7 @@ export default function AssistantPage() {
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
+      <PageBackground src={bgAssistant} />
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Conversational Assistant</h1>
 
       {/* Session history */}

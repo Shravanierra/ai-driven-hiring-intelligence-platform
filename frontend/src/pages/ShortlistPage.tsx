@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
+import PageBackground from '../components/PageBackground';
+import bgShortlist from '../assets/bg-shortlist.svg';
 
 interface ShortlistEntry {
   candidateId: string;
@@ -90,6 +92,7 @@ export default function ShortlistPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <PageBackground src={bgShortlist} />
       <h1 className="text-2xl font-bold text-gray-800">Shortlist</h1>
 
       {/* Filter panel */}

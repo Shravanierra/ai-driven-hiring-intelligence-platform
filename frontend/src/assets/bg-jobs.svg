@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <!-- Document stack shapes -->
+  <rect x="900" y="80" width="160" height="200" rx="10" fill="#bfdbfe" fill-opacity="0.4" transform="rotate(-8 980 180)"/>
+  <rect x="920" y="70" width="160" height="200" rx="10" fill="#93c5fd" fill-opacity="0.3" transform="rotate(-3 1000 170)"/>
+  <rect x="940" y="60" width="160" height="200" rx="10" fill="#60a5fa" fill-opacity="0.2"/>
+  <!-- Lines on doc -->
+  <line x1="960" y1="100" x2="1080" y2="100" stroke="#3b82f6" stroke-opacity="0.2" stroke-width="6" stroke-linecap="round"/>
+  <line x1="960" y1="120" x2="1060" y2="120" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="6" stroke-linecap="round"/>
+  <line x1="960" y1="140" x2="1070" y2="140" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="6" stroke-linecap="round"/>
+  <!-- Briefcase icon outline -->
+  <rect x="100" y="600" width="200" height="150" rx="14" fill="none" stroke="#6366f1" stroke-opacity="0.12" stroke-width="8"/>
+  <path d="M150 600 v-20 a20 20 0 0 1 20-20 h60 a20 20 0 0 1 20 20 v20" fill="none" stroke="#6366f1" stroke-opacity="0.12" stroke-width="8"/>
+  <line x1="100" y1="670" x2="300" y2="670" stroke="#6366f1" stroke-opacity="0.1" stroke-width="6"/>
+  <!-- Floating tags -->
+  <rect x="200" y="200" width="100" height="30" rx="15" fill="#dbeafe" fill-opacity="0.6"/>
+  <rect x="320" y="180" width="80" height="30" rx="15" fill="#e0e7ff" fill-opacity="0.6"/>
+  <rect x="180" y="250" width="120" height="30" rx="15" fill="#dbeafe" fill-opacity="0.5"/>
+  <!-- Dots grid -->
+  <g fill="#6366f1" fill-opacity="0.06">
+    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/><circle cx="200" cy="50" r="4"/>
+    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/><circle cx="200" cy="100" r="4"/>
+    <circle cx="50" cy="150" r="4"/><circle cx="100" cy="150" r="4"/><circle cx="150" cy="150" r="4"/><circle cx="200" cy="150" r="4"/>
+    <circle cx="1250" cy="700" r="4"/><circle cx="1300" cy="700" r="4"/><circle cx="1350" cy="700" r="4"/><circle cx="1400" cy="700" r="4"/>
+    <circle cx="1250" cy="750" r="4"/><circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
+    <circle cx="1250" cy="800" r="4"/><circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
+  </g>
+</svg>

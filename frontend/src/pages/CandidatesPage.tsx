@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
+import PageBackground from '../components/PageBackground';
+import bgCandidates from '../assets/bg-candidates.svg';
 
 interface BreakdownItem {
   criterion_label: string;
@@ -105,6 +107,7 @@ export default function CandidatesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <PageBackground src={bgCandidates} />
       <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
 
       {/* Resume upload zone */}

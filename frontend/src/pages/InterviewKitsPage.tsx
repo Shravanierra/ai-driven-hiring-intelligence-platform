@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
+import PageBackground from '../components/PageBackground';
+import bgInterview from '../assets/bg-interview.svg';
 
 interface Rubric {
   strong: string;
@@ -160,6 +162,7 @@ export default function InterviewKitsPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <PageBackground src={bgInterview} />
       <h1 className="text-2xl font-bold text-gray-800">Interview Kits</h1>
 
       {/* Candidate selector */}
