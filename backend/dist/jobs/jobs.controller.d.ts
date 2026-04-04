@@ -6,6 +6,7 @@ export declare class JobsController {
     private readonly jobsService;
     constructor(jobsService: JobsService);
     createJob(file: Express.Multer.File, title: string, recruiter: AuthenticatedRecruiter): Promise<JobDescription>;
+    listJobs(recruiter: AuthenticatedRecruiter): Promise<JobDescription[]>;
     getJob(id: string, recruiter: AuthenticatedRecruiter): Promise<JobDescription>;
     getCriteria(id: string, recruiter: AuthenticatedRecruiter): Promise<ScreeningCriteria>;
     saveCriteria(id: string, dto: UpdateCriteriaDto, recruiter: AuthenticatedRecruiter): Promise<ScreeningCriteria>;

@@ -22,10 +22,12 @@ export declare class JobsService {
     private readonly bucket;
     constructor(jobRepo: Repository<JobDescription>, criteriaRepo: Repository<ScreeningCriteria>, llmClient: LlmClient, config: ConfigService, scoringService: ScoringService);
     uploadAndParse(file: Express.Multer.File, recruiterId: string, title: string): Promise<JobDescription>;
+    findAllForRecruiter(recruiterId: string): Promise<JobDescription[]>;
     findById(id: string): Promise<JobDescription>;
     findByIdForRecruiter(id: string, recruiterId: string): Promise<JobDescription>;
     getCriteria(jobId: string): Promise<ScreeningCriteria>;
     saveCriteria(jobId: string, dto: UpdateCriteriaDto): Promise<ScreeningCriteria>;
+    private extractTitle;
     private generateCriteria;
     private extractText;
     private uploadToMinio;

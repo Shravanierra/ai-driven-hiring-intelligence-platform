@@ -89,13 +89,17 @@ let JobsService = JobsService_1 = class JobsService {
             fileUrl,
             parsedAt: new Date(),
         });
-        try {
-            await this.generateCriteria(job.id, rawText);
-        }
-        catch (err) {
-            this.logger.warn(`Criteria generation failed for job ${job.id}: ${err.message}`);
-        }
+        await Promise.allSettled([
+            this.generateCriteria(job.id, rawText),
+            this.extractTitle(job.id, rawText, title),
+        ]);
         return this.jobRepo.findOneOrFail({ where: { id: job.id } });
+    }
+    async findAllForRecruiter(recruiterId) {
+        return this.jobRepo.find({
+            where: { recruiterId },
+            order: { parsedAt: 'DESC' },
+        });
     }
     async findById(id) {
         const job = await this.jobRepo.findOne({ where: { id } });
@@ -159,6 +163,25 @@ let JobsService = JobsService_1 = class JobsService {
             .rescoreAll(jobId)
             .catch((err) => this.logger.error(`Auto-rescore failed for job ${jobId}: ${err.message}`));
         return saved;
+    }
+    async extractTitle(jobId, rawText, fallbackTitle) {
+        try {
+            const result = await this.llmClient.createChatCompletion([
+                {
+                    role: 'system',
+                    content: 'Extract the job title from the job description. Return ONLY the job title as plain text — no punctuation, no explanation, no quotes. If no clear title is found, return an empty string.',
+                },
+                { role: 'user', content: rawText.slice(0, 2000) },
+            ], { temperature: 0, maxTokens: 30 });
+            const extracted = result.content.trim();
+            if (extracted && extracted.length > 0 && extracted.length < 200) {
+                await this.jobRepo.update(jobId, { title: extracted });
+                this.logger.log(`Title extracted for job ${jobId}: "${extracted}"`);
+            }
+        }
+        catch (err) {
+            this.logger.warn(`Title extraction failed for job ${jobId}, keeping fallback "${fallbackTitle}": ${err.message}`);
+        }
     }
     async generateCriteria(jobId, rawText) {
         const systemPrompt = `You are an expert recruiter assistant. Extract structured screening criteria from the job description text provided. Return ONLY valid JSON with this exact shape:

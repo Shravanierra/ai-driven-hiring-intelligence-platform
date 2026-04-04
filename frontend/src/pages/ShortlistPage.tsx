@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import PageBackground from '../components/PageBackground';
 import bgShortlist from '../assets/bg-shortlist.svg';
+import JdSwitcher from '../components/JdSwitcher';
 
 interface ShortlistEntry {
   candidateId: string;
@@ -87,12 +88,18 @@ export default function ShortlistPage() {
   };
 
   if (!jobId) {
-    return <EmptyState message="Upload a job description first to generate a shortlist." />;
+    return (
+      <div className="max-w-4xl mx-auto pt-8">
+        <PageBackground src={bgShortlist} />
+        <JdSwitcher />
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <PageBackground src={bgShortlist} />
+      <JdSwitcher />
       <h1 className="text-2xl font-bold text-gray-800">Shortlist</h1>
 
       {/* Filter panel */}

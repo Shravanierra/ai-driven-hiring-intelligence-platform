@@ -1,30 +1,46 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const STORAGE_KEY = 'selected_job_id';
+const ID_KEY    = 'selected_job_id';
+const TITLE_KEY = 'selected_job_title';
 
 interface JobContextValue {
   jobId: string | null;
+  jobTitle: string | null;
+  setJob: (id: string | null, title?: string | null) => void;
+  /** @deprecated use setJob */
   setJobId: (id: string | null) => void;
 }
 
-const JobContext = createContext<JobContextValue>({ jobId: null, setJobId: () => {} });
+const JobContext = createContext<JobContextValue>({
+  jobId: null,
+  jobTitle: null,
+  setJob: () => {},
+  setJobId: () => {},
+});
 
 export function JobProvider({ children }: { children: React.ReactNode }) {
-  const [jobId, setJobIdState] = useState<string | null>(
-    () => localStorage.getItem(STORAGE_KEY),
-  );
+  const [jobId, setJobIdState]       = useState<string | null>(() => localStorage.getItem(ID_KEY));
+  const [jobTitle, setJobTitleState] = useState<string | null>(() => localStorage.getItem(TITLE_KEY));
 
-  const setJobId = (id: string | null) => {
+  const setJob = (id: string | null, title?: string | null) => {
     setJobIdState(id);
+    const t = title ?? null;
+    setJobTitleState(t);
     if (id) {
-      localStorage.setItem(STORAGE_KEY, id);
+      localStorage.setItem(ID_KEY, id);
+      if (t) localStorage.setItem(TITLE_KEY, t);
+      else    localStorage.removeItem(TITLE_KEY);
     } else {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(ID_KEY);
+      localStorage.removeItem(TITLE_KEY);
     }
   };
 
+  // backwards-compat shim
+  const setJobId = (id: string | null) => setJob(id);
+
   return (
-    <JobContext.Provider value={{ jobId, setJobId }}>
+    <JobContext.Provider value={{ jobId, jobTitle, setJob, setJobId }}>
       {children}
     </JobContext.Provider>
   );

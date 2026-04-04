@@ -3,6 +3,8 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import PageBackground from '../components/PageBackground';
 import bgCandidates from '../assets/bg-candidates.svg';
+import { BriefcaseBusiness } from 'lucide-react';
+import JdSwitcher from '../components/JdSwitcher';
 
 interface BreakdownItem {
   criterion_label: string;
@@ -42,6 +44,11 @@ export default function CandidatesPage() {
   const [uploadResult, setUploadResult] = useState<{ added: number; failed: number } | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load all JDs for the switcher
+  useEffect(() => {
+    api.get('/jobs').then(({ data }) => setJobs(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
 
   const loadCandidates = useCallback(async () => {
     if (!jobId) return;
@@ -102,12 +109,21 @@ export default function CandidatesPage() {
   }, [jobId]);
 
   if (!jobId) {
-    return <EmptyState message="Upload a job description first to see candidates." />;
+    return (
+      <div className="max-w-4xl mx-auto pt-8">
+        <PageBackground src={bgCandidates} />
+        <JdSwitcher />
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <PageBackground src={bgCandidates} />
+
+      {/* JD switcher */}
+      <JdSwitcher />
+
       <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
 
       {/* Resume upload zone */}

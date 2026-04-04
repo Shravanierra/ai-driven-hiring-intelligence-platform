@@ -37,6 +37,13 @@ export class JobsController {
     return this.jobsService.uploadAndParse(file, recruiter.recruiterId, jobTitle);
   }
 
+  @Get()
+  async listJobs(
+    @CurrentRecruiter() recruiter: AuthenticatedRecruiter,
+  ): Promise<JobDescription[]> {
+    return this.jobsService.findAllForRecruiter(recruiter.recruiterId);
+  }
+
   @Get(':id')
   async getJob(
     @Param('id', new ParseUUIDPipe()) id: string,

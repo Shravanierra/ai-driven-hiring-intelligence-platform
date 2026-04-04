@@ -19,8 +19,8 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col">
+    <div className="flex min-h-screen">
+      <aside className="w-56 bg-white/80 backdrop-blur-sm border-r border-gray-200 flex flex-col">
         <div className="px-6 py-5 border-b border-gray-200">
           <span className="text-lg font-bold text-indigo-600">AI Hiring</span>
         </div>

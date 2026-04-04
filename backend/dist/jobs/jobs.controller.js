@@ -26,6 +26,9 @@ let JobsController = class JobsController {
         const jobTitle = title ?? 'Untitled Position';
         return this.jobsService.uploadAndParse(file, recruiter.recruiterId, jobTitle);
     }
+    async listJobs(recruiter) {
+        return this.jobsService.findAllForRecruiter(recruiter.recruiterId);
+    }
     async getJob(id, recruiter) {
         return this.jobsService.findByIdForRecruiter(id, recruiter.recruiterId);
     }
@@ -52,6 +55,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "createJob", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, current_recruiter_decorator_1.CurrentRecruiter)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], JobsController.prototype, "listJobs", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', new common_1.ParseUUIDPipe())),

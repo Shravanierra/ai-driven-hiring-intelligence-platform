@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import PageBackground from '../components/PageBackground';
 import bgInterview from '../assets/bg-interview.svg';
+import JdSwitcher from '../components/JdSwitcher';
 
 interface Rubric {
   strong: string;
@@ -154,8 +155,9 @@ export default function InterviewKitsPage() {
 
   if (!jobId) {
     return (
-      <div className="text-center py-20 text-gray-400">
-        Upload a job description first to manage interview kits.
+      <div className="max-w-5xl mx-auto pt-8">
+        <PageBackground src={bgInterview} />
+        <JdSwitcher />
       </div>
     );
   }
@@ -163,6 +165,7 @@ export default function InterviewKitsPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <PageBackground src={bgInterview} />
+      <JdSwitcher />
       <h1 className="text-2xl font-bold text-gray-800">Interview Kits</h1>
 
       {/* Candidate selector */}

@@ -2,39 +2,54 @@
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#fdf4ff"/>
-      <stop offset="100%" stop-color="#fae8ff"/>
+      <stop offset="60%" stop-color="#fae8ff"/>
+      <stop offset="100%" stop-color="#f5d0fe"/>
     </linearGradient>
   </defs>
   <rect width="1440" height="900" fill="url(#bg)"/>
-  <!-- Chat bubbles -->
-  <rect x="900" y="100" width="280" height="70" rx="20" fill="#e879f9" fill-opacity="0.1"/>
-  <polygon points="900,140 880,160 900,155" fill="#e879f9" fill-opacity="0.1"/>
-  <rect x="860" y="200" width="220" height="60" rx="20" fill="#d946ef" fill-opacity="0.08"/>
-  <polygon points="1080,230 1100,250 1080,245" fill="#d946ef" fill-opacity="0.08"/>
-  <rect x="920" y="290" width="260" height="70" rx="20" fill="#e879f9" fill-opacity="0.1"/>
-  <polygon points="920,330 900,350 920,345" fill="#e879f9" fill-opacity="0.1"/>
-  <!-- Neural network nodes -->
-  <circle cx="200" cy="400" r="8" fill="#a855f7" fill-opacity="0.15"/>
-  <circle cx="300" cy="350" r="6" fill="#c084fc" fill-opacity="0.15"/>
-  <circle cx="300" cy="450" r="6" fill="#c084fc" fill-opacity="0.15"/>
-  <circle cx="400" cy="300" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
-  <circle cx="400" cy="400" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
-  <circle cx="400" cy="500" r="5" fill="#d8b4fe" fill-opacity="0.2"/>
-  <line x1="200" y1="400" x2="300" y2="350" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
-  <line x1="200" y1="400" x2="300" y2="450" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
-  <line x1="300" y1="350" x2="400" y2="300" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
-  <line x1="300" y1="350" x2="400" y2="400" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
-  <line x1="300" y1="450" x2="400" y2="400" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
-  <line x1="300" y1="450" x2="400" y2="500" stroke="#a855f7" stroke-opacity="0.08" stroke-width="2"/>
-  <!-- Sparkle / AI stars -->
-  <path d="M1300 600 l5 15 l15 5 l-15 5 l-5 15 l-5-15 l-15-5 l15-5 z" fill="#e879f9" fill-opacity="0.15"/>
-  <path d="M150 700 l4 12 l12 4 l-12 4 l-4 12 l-4-12 l-12-4 l12-4 z" fill="#a855f7" fill-opacity="0.12"/>
-  <path d="M1380 200 l3 9 l9 3 l-9 3 l-3 9 l-3-9 l-9-3 l9-3 z" fill="#d946ef" fill-opacity="0.12"/>
-  <!-- Dots -->
-  <g fill="#a855f7" fill-opacity="0.05">
-    <circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
-    <circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
-    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/>
-    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/>
+
+  <!-- Chat bubbles right side -->
+  <rect x="920" y="80" width="360" height="80" rx="24" fill="#e879f9" fill-opacity="0.18"/>
+  <polygon points="920,120 895,140 920,135" fill="#e879f9" fill-opacity="0.18"/>
+  <rect x="960" y="190" width="300" height="70" rx="24" fill="#d946ef" fill-opacity="0.14"/>
+  <polygon points="1260,225 1285,245 1260,240" fill="#d946ef" fill-opacity="0.14"/>
+  <rect x="930" y="290" width="340" height="80" rx="24" fill="#e879f9" fill-opacity="0.18"/>
+  <polygon points="930,330 905,350 930,345" fill="#e879f9" fill-opacity="0.18"/>
+  <rect x="970" y="400" width="260" height="70" rx="24" fill="#f0abfc" fill-opacity="0.2"/>
+  <polygon points="1230,435 1255,455 1230,450" fill="#f0abfc" fill-opacity="0.2"/>
+
+  <!-- Neural network left -->
+  <circle cx="180" cy="380" r="14" fill="#a855f7" fill-opacity="0.3"/>
+  <circle cx="300" cy="310" r="10" fill="#c084fc" fill-opacity="0.3"/>
+  <circle cx="300" cy="450" r="10" fill="#c084fc" fill-opacity="0.3"/>
+  <circle cx="420" cy="250" r="8" fill="#d8b4fe" fill-opacity="0.35"/>
+  <circle cx="420" cy="380" r="8" fill="#d8b4fe" fill-opacity="0.35"/>
+  <circle cx="420" cy="510" r="8" fill="#d8b4fe" fill-opacity="0.35"/>
+  <circle cx="540" cy="310" r="7" fill="#e9d5ff" fill-opacity="0.4"/>
+  <circle cx="540" cy="450" r="7" fill="#e9d5ff" fill-opacity="0.4"/>
+  <line x1="180" y1="380" x2="300" y2="310" stroke="#a855f7" stroke-opacity="0.2" stroke-width="2"/>
+  <line x1="180" y1="380" x2="300" y2="450" stroke="#a855f7" stroke-opacity="0.2" stroke-width="2"/>
+  <line x1="300" y1="310" x2="420" y2="250" stroke="#a855f7" stroke-opacity="0.15" stroke-width="2"/>
+  <line x1="300" y1="310" x2="420" y2="380" stroke="#a855f7" stroke-opacity="0.15" stroke-width="2"/>
+  <line x1="300" y1="450" x2="420" y2="380" stroke="#a855f7" stroke-opacity="0.15" stroke-width="2"/>
+  <line x1="300" y1="450" x2="420" y2="510" stroke="#a855f7" stroke-opacity="0.15" stroke-width="2"/>
+  <line x1="420" y1="250" x2="540" y2="310" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+  <line x1="420" y1="380" x2="540" y2="310" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+  <line x1="420" y1="380" x2="540" y2="450" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+  <line x1="420" y1="510" x2="540" y2="450" stroke="#a855f7" stroke-opacity="0.1" stroke-width="2"/>
+
+  <!-- Sparkle stars -->
+  <path d="M1320 580 l6 18 l18 6 l-18 6 l-6 18 l-6-18 l-18-6 l18-6 z" fill="#e879f9" fill-opacity="0.3"/>
+  <path d="M140 680 l5 14 l14 5 l-14 5 l-5 14 l-5-14 l-14-5 l14-5 z" fill="#a855f7" fill-opacity="0.25"/>
+  <path d="M1380 180 l4 11 l11 4 l-11 4 l-4 11 l-4-11 l-11-4 l11-4 z" fill="#d946ef" fill-opacity="0.25"/>
+  <path d="M700 100 l4 11 l11 4 l-11 4 l-4 11 l-4-11 l-11-4 l11-4 z" fill="#c084fc" fill-opacity="0.3"/>
+
+  <!-- Dot grid -->
+  <g fill="#a855f7" fill-opacity="0.1">
+    <circle cx="1280" cy="760" r="4"/><circle cx="1330" cy="760" r="4"/><circle cx="1380" cy="760" r="4"/>
+    <circle cx="1280" cy="810" r="4"/><circle cx="1330" cy="810" r="4"/><circle cx="1380" cy="810" r="4"/>
+    <circle cx="60" cy="60" r="4"/><circle cx="110" cy="60" r="4"/><circle cx="160" cy="60" r="4"/>
+    <circle cx="60" cy="110" r="4"/><circle cx="110" cy="110" r="4"/><circle cx="160" cy="110" r="4"/>
   </g>
+  <circle cx="750" cy="820" r="130" fill="#d946ef" fill-opacity="0.07"/>
 </svg>

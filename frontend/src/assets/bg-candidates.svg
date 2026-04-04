@@ -1,35 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f5f3ff"/>
-      <stop offset="100%" stop-color="#ede9fe"/>
+      <stop offset="0%" stop-color="#faf5ff"/>
+      <stop offset="60%" stop-color="#f3e8ff"/>
+      <stop offset="100%" stop-color="#e9d5ff"/>
     </linearGradient>
   </defs>
   <rect width="1440" height="900" fill="url(#bg)"/>
-  <!-- Person silhouettes -->
-  <circle cx="1200" cy="160" r="45" fill="#a78bfa" fill-opacity="0.15"/>
-  <path d="M1155 260 q0-45 45-45 q45 0 45 45 z" fill="#a78bfa" fill-opacity="0.12"/>
-  <circle cx="1310" cy="200" r="35" fill="#c4b5fd" fill-opacity="0.15"/>
-  <path d="M1275 290 q0-35 35-35 q35 0 35 35 z" fill="#c4b5fd" fill-opacity="0.12"/>
-  <circle cx="1090" cy="210" r="30" fill="#ddd6fe" fill-opacity="0.2"/>
-  <path d="M1060 290 q0-30 30-30 q30 0 30 30 z" fill="#ddd6fe" fill-opacity="0.15"/>
-  <!-- Profile card outlines -->
-  <rect x="80" y="500" width="220" height="280" rx="16" fill="none" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="2"/>
-  <circle cx="190" cy="560" r="30" fill="#ede9fe" fill-opacity="0.5"/>
-  <line x1="120" y1="610" x2="260" y2="610" stroke="#7c3aed" stroke-opacity="0.1" stroke-width="5" stroke-linecap="round"/>
-  <line x1="130" y1="635" x2="250" y2="635" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="4" stroke-linecap="round"/>
-  <line x1="120" y1="660" x2="260" y2="660" stroke="#7c3aed" stroke-opacity="0.08" stroke-width="4" stroke-linecap="round"/>
-  <!-- Skill tags -->
-  <rect x="900" y="600" width="90" height="26" rx="13" fill="#ddd6fe" fill-opacity="0.5"/>
-  <rect x="1000" y="600" width="70" height="26" rx="13" fill="#ede9fe" fill-opacity="0.5"/>
-  <rect x="920" y="640" width="110" height="26" rx="13" fill="#ddd6fe" fill-opacity="0.4"/>
-  <rect x="1040" y="640" width="80" height="26" rx="13" fill="#ede9fe" fill-opacity="0.4"/>
-  <!-- Dots -->
-  <g fill="#7c3aed" fill-opacity="0.05">
-    <circle cx="1300" cy="700" r="4"/><circle cx="1350" cy="700" r="4"/><circle cx="1400" cy="700" r="4"/>
-    <circle cx="1300" cy="750" r="4"/><circle cx="1350" cy="750" r="4"/><circle cx="1400" cy="750" r="4"/>
-    <circle cx="1300" cy="800" r="4"/><circle cx="1350" cy="800" r="4"/><circle cx="1400" cy="800" r="4"/>
-    <circle cx="50" cy="50" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="150" cy="50" r="4"/>
-    <circle cx="50" cy="100" r="4"/><circle cx="100" cy="100" r="4"/><circle cx="150" cy="100" r="4"/>
+
+  <!-- Profile cards stacked top-right -->
+  <rect x="960" y="80" width="340" height="120" rx="16" fill="#e9d5ff" fill-opacity="0.6" transform="rotate(3 1130 140)"/>
+  <rect x="960" y="220" width="340" height="120" rx="16" fill="#ddd6fe" fill-opacity="0.5" transform="rotate(-2 1130 280)"/>
+  <rect x="960" y="360" width="340" height="120" rx="16" fill="#ede9fe" fill-opacity="0.7"/>
+  <!-- Avatar circles on cards -->
+  <circle cx="1010" cy="420" r="28" fill="#a78bfa" fill-opacity="0.35"/>
+  <path d="M982 470 q0-28 28-28 q28 0 28 28 z" fill="#a78bfa" fill-opacity="0.25"/>
+  <line x1="1060" y1="405" x2="1270" y2="405" stroke="#7c3aed" stroke-opacity="0.2" stroke-width="6" stroke-linecap="round"/>
+  <line x1="1060" y1="430" x2="1220" y2="430" stroke="#7c3aed" stroke-opacity="0.15" stroke-width="5" stroke-linecap="round"/>
+  <!-- Score badge -->
+  <rect x="1240" y="395" width="50" height="28" rx="14" fill="#7c3aed" fill-opacity="0.2"/>
+
+  <!-- Large person silhouette bottom-left -->
+  <circle cx="160" cy="560" r="70" fill="#c4b5fd" fill-opacity="0.3"/>
+  <path d="M80 700 q0-80 80-80 q80 0 80 80 z" fill="#c4b5fd" fill-opacity="0.25"/>
+  <circle cx="340" cy="600" r="50" fill="#ddd6fe" fill-opacity="0.3"/>
+  <path d="M280 710 q0-60 60-60 q60 0 60 60 z" fill="#ddd6fe" fill-opacity="0.2"/>
+  <circle cx="490" cy="640" r="40" fill="#ede9fe" fill-opacity="0.35"/>
+  <path d="M440 720 q0-50 50-50 q50 0 50 50 z" fill="#ede9fe" fill-opacity="0.25"/>
+
+  <!-- Skill tags scattered -->
+  <rect x="700" y="120" width="110" height="32" rx="16" fill="#a78bfa" fill-opacity="0.2"/>
+  <rect x="700" y="120" width="110" height="32" rx="16" fill="none" stroke="#7c3aed" stroke-opacity="0.2" stroke-width="1.5"/>
+  <rect x="830" y="100" width="90" height="32" rx="16" fill="#c4b5fd" fill-opacity="0.25"/>
+  <rect x="710" y="170" width="130" height="32" rx="16" fill="#ddd6fe" fill-opacity="0.3"/>
+  <rect x="855" y="155" width="80" height="32" rx="16" fill="#a78bfa" fill-opacity="0.18"/>
+
+  <!-- Dot grid -->
+  <g fill="#7c3aed" fill-opacity="0.1">
+    <circle cx="60" cy="60" r="4"/><circle cx="110" cy="60" r="4"/><circle cx="160" cy="60" r="4"/><circle cx="210" cy="60" r="4"/>
+    <circle cx="60" cy="110" r="4"/><circle cx="110" cy="110" r="4"/><circle cx="160" cy="110" r="4"/><circle cx="210" cy="110" r="4"/>
+    <circle cx="60" cy="160" r="4"/><circle cx="110" cy="160" r="4"/><circle cx="160" cy="160" r="4"/><circle cx="210" cy="160" r="4"/>
+    <circle cx="1280" cy="760" r="4"/><circle cx="1330" cy="760" r="4"/><circle cx="1380" cy="760" r="4"/>
+    <circle cx="1280" cy="810" r="4"/><circle cx="1330" cy="810" r="4"/><circle cx="1380" cy="810" r="4"/>
   </g>
+
+  <!-- Blob accents -->
+  <circle cx="750" cy="820" r="140" fill="#a78bfa" fill-opacity="0.07"/>
+  <circle cx="1350" cy="600" r="100" fill="#7c3aed" fill-opacity="0.06"/>
 </svg>

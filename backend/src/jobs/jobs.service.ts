@@ -112,17 +112,20 @@ export class JobsService {
       parsedAt: new Date(),
     });
 
-    // Generate screening criteria from the parsed JD text
-    try {
-      await this.generateCriteria(job.id, rawText);
-    } catch (err) {
-      this.logger.warn(
-        `Criteria generation failed for job ${job.id}: ${(err as Error).message}`,
-      );
-      // Non-fatal — JD is still parsed successfully
-    }
+    // Generate screening criteria and extract a proper title in parallel
+    await Promise.allSettled([
+      this.generateCriteria(job.id, rawText),
+      this.extractTitle(job.id, rawText, title),
+    ]);
 
     return this.jobRepo.findOneOrFail({ where: { id: job.id } });
+  }
+
+  async findAllForRecruiter(recruiterId: string): Promise<JobDescription[]> {
+    return this.jobRepo.find({
+      where: { recruiterId },
+      order: { parsedAt: 'DESC' },
+    });
   }
 
   async findById(id: string): Promise<JobDescription> {
@@ -208,6 +211,35 @@ export class JobsService {
       );
 
     return saved;
+  }
+
+  private async extractTitle(
+    jobId: string,
+    rawText: string,
+    fallbackTitle: string,
+  ): Promise<void> {
+    try {
+      const result = await this.llmClient.createChatCompletion(
+        [
+          {
+            role: 'system',
+            content:
+              'Extract the job title from the job description. Return ONLY the job title as plain text — no punctuation, no explanation, no quotes. If no clear title is found, return an empty string.',
+          },
+          { role: 'user', content: rawText.slice(0, 2000) },
+        ],
+        { temperature: 0, maxTokens: 30 },
+      );
+      const extracted = result.content.trim();
+      if (extracted && extracted.length > 0 && extracted.length < 200) {
+        await this.jobRepo.update(jobId, { title: extracted });
+        this.logger.log(`Title extracted for job ${jobId}: "${extracted}"`);
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Title extraction failed for job ${jobId}, keeping fallback "${fallbackTitle}": ${(err as Error).message}`,
+      );
+    }
   }
 
   private async generateCriteria(

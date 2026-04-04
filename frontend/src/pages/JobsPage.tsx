@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import PageBackground from '../components/PageBackground';
 import bgJobs from '../assets/bg-jobs.svg';
+import { FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 interface Criterion {
   label: string;
@@ -18,16 +19,25 @@ interface Criteria {
   custom_criteria: Criterion[];
 }
 
+interface JobDescription {
+  id: string;
+  title: string;
+  status: 'pending' | 'parsed' | 'error';
+  parsedAt: string | null;
+  errorMessage: string | null;
+}
+
 type UploadStatus = 'idle' | 'uploading' | 'polling' | 'parsed' | 'error';
 
 export default function JobsPage() {
-  const { jobId, setJobId } = useJob();
+  const { jobId, setJob } = useJob();
   const [status, setStatus] = useState<UploadStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [dragging, setDragging] = useState(false);
   const [criteria, setCriteria] = useState<Criteria | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [jobs, setJobs] = useState<JobDescription[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,6 +48,16 @@ export default function JobsPage() {
     }
   };
 
+  const loadJobs = async () => {
+    try {
+      const { data } = await api.get('/jobs');
+      setJobs(Array.isArray(data) ? data : []);
+    } catch {
+      // silently ignore
+    }
+  };
+
+  useEffect(() => { loadJobs(); }, []);
   useEffect(() => () => stopPolling(), []);
 
   const pollJob = (id: string) => {
@@ -75,13 +95,17 @@ export default function JobsPage() {
     setSaved(false);
     const form = new FormData();
     form.append('file', file);
+    // Use filename (without extension) as the initial title
+    const titleFromFile = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+    form.append('title', titleFromFile);
     try {
       const { data } = await api.post('/jobs', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setJobId(data.id);
+      setJob(data.id, titleFromFile);
       setStatus('polling');
       pollJob(data.id);
+      loadJobs();
     } catch (err: any) {
       setStatus('error');
       setErrorMsg(err.response?.data?.detail || 'Upload failed');
@@ -137,10 +161,62 @@ export default function JobsPage() {
     }
   };
 
+  const selectJob = async (id: string) => {
+    const job = jobs.find((j) => j.id === id);
+    setJob(id, job?.title ?? null);
+    setCriteria(null);
+    setStatus('idle');
+    setErrorMsg('');
+    setSaved(false);
+    try {
+      const { data: crit } = await api.get(`/jobs/${id}/criteria`);
+      setCriteria({
+        required_skills: crit.required_skills ?? crit.requiredSkills ?? [],
+        preferred_skills: crit.preferred_skills ?? crit.preferredSkills ?? [],
+        experience_level: crit.experience_level ?? crit.experienceLevel ?? 'mid',
+        responsibilities: crit.responsibilities ?? [],
+        custom_criteria: crit.custom_criteria ?? crit.customCriteria ?? [],
+      });
+      setStatus('parsed');
+    } catch {
+      // no criteria yet
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <PageBackground src={bgJobs} />
-      <h1 className="text-2xl font-bold text-gray-800">Job Description Upload</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Job Descriptions</h1>
+
+      {/* Uploaded JDs list */}
+      {jobs.length > 0 && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+            <span className="text-sm font-semibold text-gray-700">Uploaded JDs</span>
+            <span className="text-xs text-gray-400">{jobs.length} total</span>
+          </div>
+          <ul className="divide-y divide-gray-100">
+            {jobs.map((job) => (
+              <li
+                key={job.id}
+                onClick={() => selectJob(job.id)}
+                className={`flex items-center gap-4 px-5 py-3 cursor-pointer transition-colors hover:bg-indigo-50 ${
+                  jobId === job.id ? 'bg-indigo-50 border-l-4 border-indigo-500' : ''
+                }`}
+              >
+                <FileText size={16} className="text-indigo-400 flex-shrink-0" />
+                <span className="flex-1 text-sm font-medium text-gray-700 truncate">{job.title}</span>
+                <JobStatusIcon status={job.status} />
+                {job.parsedAt && (
+                  <span className="text-xs text-gray-400 flex-shrink-0">
+                    {new Date(job.parsedAt).toLocaleDateString()}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Drop zone */}
       <div
@@ -257,8 +333,13 @@ export default function JobsPage() {
   );
 }
 
-function StatusBadge({ color, text }: { color: string; text: string }) {
-  const colors: Record<string, string> = {
+function JobStatusIcon({ status }: { status: string }) {
+  if (status === 'parsed') return <CheckCircle size={14} className="text-green-500 flex-shrink-0" />;
+  if (status === 'error')  return <AlertCircle size={14} className="text-red-400 flex-shrink-0" />;
+  return <Clock size={14} className="text-yellow-400 flex-shrink-0" />;
+}
+
+function StatusBadge({ color, text }: { color: string; text: string }) {  const colors: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 border-blue-200',
     yellow: 'bg-yellow-50 text-yellow-700 border-yellow-200',
     red: 'bg-red-50 text-red-700 border-red-200',
