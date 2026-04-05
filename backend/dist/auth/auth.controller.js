@@ -49,8 +49,7 @@ let AuthController = class AuthController {
         }
         const id = crypto.randomUUID();
         this.users.set(dto.email, { id, email: dto.email, password: dto.password });
-        const token = this.jwtService.sign({ sub: id, email: dto.email });
-        return { access_token: token, recruiter_id: id };
+        return { message: 'Registration successful' };
     }
     login(dto) {
         const user = this.users.get(dto.email);

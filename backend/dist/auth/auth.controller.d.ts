@@ -13,11 +13,9 @@ export declare class AuthController {
     constructor(jwtService: JwtService);
     register(dto: RegisterDto): {
         error: string;
-        access_token?: undefined;
-        recruiter_id?: undefined;
+        message?: undefined;
     } | {
-        access_token: string;
-        recruiter_id: `${string}-${string}-${string}-${string}-${string}`;
+        message: string;
         error?: undefined;
     };
     login(dto: LoginDto): {
