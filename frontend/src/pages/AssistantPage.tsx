@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
-import PageBackground from '../components/PageBackground';
-import bgAssistant from '../assets/bg-assistant.svg';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface CandidateResult {
   id: string;
@@ -20,6 +19,7 @@ interface Turn {
 
 export default function AssistantPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,8 @@ export default function AssistantPage() {
   useEffect(() => {
     api.post('/assistant/sessions').then(({ data }) => {
       setSessionId(data.id);
-    });
+      setSessionLoading(false);
+    }).catch(() => setSessionLoading(false));
   }, []);
 
   useEffect(() => {
@@ -70,12 +71,12 @@ export default function AssistantPage() {
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
-      <PageBackground src={bgAssistant} />
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Conversational Assistant</h1>
+      {sessionLoading && <LoadingOverlay message="Starting session…" />}
+      <h1 className="text-2xl font-bold text-white text-center mb-4">Conversational Assistant</h1>
 
       {/* Session history */}
       <div className="flex-1 overflow-y-auto space-y-6 pr-1">
-        {turns.length === 0 && (
+        {turns.length === 0 && !loading && (
           <p className="text-gray-400 text-sm text-center mt-16">
             Ask anything about your candidate pipeline.
           </p>
@@ -83,6 +84,16 @@ export default function AssistantPage() {
         {turns.map((turn, i) => (
           <TurnCard key={i} turn={turn} />
         ))}
+        {/* Inline thinking indicator */}
+        {loading && (
+          <div className="flex items-center gap-3 pl-1">
+            <div className="bg-white/10 border border-white/20 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0ms]" />
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:150ms]" />
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:300ms]" />
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 

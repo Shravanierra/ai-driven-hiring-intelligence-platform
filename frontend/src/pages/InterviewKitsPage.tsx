@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
-import PageBackground from '../components/PageBackground';
-import bgInterview from '../assets/bg-interview.svg';
 import JdSwitcher from '../components/JdSwitcher';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface Rubric {
   strong: string;
@@ -156,7 +155,6 @@ export default function InterviewKitsPage() {
   if (!jobId) {
     return (
       <div className="max-w-5xl mx-auto pt-8">
-        <PageBackground src={bgInterview} />
         <JdSwitcher />
       </div>
     );
@@ -164,9 +162,12 @@ export default function InterviewKitsPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <PageBackground src={bgInterview} />
+      {generating && <LoadingOverlay message="Generating interview kit with AI…" />}
+      {loading    && <LoadingOverlay message="Loading interview kit…" />}
+      {saving     && <LoadingOverlay message="Saving…" />}
+      {exporting  && <LoadingOverlay message="Exporting PDF…" />}
       <JdSwitcher />
-      <h1 className="text-2xl font-bold text-gray-800">Interview Kits</h1>
+      <h1 className="text-2xl font-bold text-white text-center">Interview Kits</h1>
 
       {/* Candidate selector */}
       <div className="bg-white rounded-xl border border-gray-200 p-5">
@@ -184,9 +185,8 @@ export default function InterviewKitsPage() {
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      {loading && <p className="text-gray-500">Loading kit…</p>}
 
-      {selectedCandidate && !kit && !loading && (
+      {selectedCandidate && !kit && !loading && !generating && (
         <div className="text-center py-10">
           <p className="text-gray-500 mb-4">No interview kit yet for this candidate.</p>
           <button

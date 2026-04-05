@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BriefcaseBusiness, Users, ListChecks, MessageSquare, ClipboardList, LogOut } from 'lucide-react';
+import loginBg from '../assets/login-bg.svg';
 
 const navItems = [
   { to: '/jobs',          label: 'Jobs',           Icon: BriefcaseBusiness },
@@ -19,10 +20,13 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-56 bg-white/80 backdrop-blur-sm border-r border-gray-200 flex flex-col">
-        <div className="px-6 py-5 border-b border-gray-200">
-          <span className="text-lg font-bold text-indigo-600">AI Hiring</span>
+    <div
+      className="flex min-h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <aside className="w-56 bg-white/10 backdrop-blur-md border-r border-white/10 flex flex-col">
+        <div className="px-6 py-5 border-b border-white/10">
+          <span className="text-lg font-bold text-white">AI Hiring</span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map(({ to, label, Icon }) => (
@@ -32,8 +36,8 @@ export default function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-white/20 text-white'
+                    : 'text-indigo-200 hover:bg-white/10 hover:text-white'
                 }`
               }
             >
@@ -42,10 +46,10 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-        <div className="px-3 py-4 border-t border-gray-200">
+        <div className="px-3 py-4 border-t border-white/10">
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-indigo-300 hover:bg-white/10 hover:text-white"
           >
             <LogOut size={16} strokeWidth={1.75} />
             Sign Out

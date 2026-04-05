@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
-import PageBackground from '../components/PageBackground';
-import bgShortlist from '../assets/bg-shortlist.svg';
 import JdSwitcher from '../components/JdSwitcher';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface ShortlistEntry {
   candidateId: string;
@@ -90,7 +89,6 @@ export default function ShortlistPage() {
   if (!jobId) {
     return (
       <div className="max-w-4xl mx-auto pt-8">
-        <PageBackground src={bgShortlist} />
         <JdSwitcher />
       </div>
     );
@@ -98,9 +96,10 @@ export default function ShortlistPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <PageBackground src={bgShortlist} />
+      {generating && <LoadingOverlay message="Generating shortlist with AI…" />}
+      {loading    && <LoadingOverlay message="Loading shortlist…" />}
       <JdSwitcher />
-      <h1 className="text-2xl font-bold text-gray-800">Shortlist</h1>
+      <h1 className="text-2xl font-bold text-white text-center">Shortlist</h1>
 
       {/* Filter panel */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
@@ -158,7 +157,6 @@ export default function ShortlistPage() {
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      {loading && <p className="text-gray-500">Loading…</p>}
 
       {/* Ranked list */}
       {entries.length > 0 && (

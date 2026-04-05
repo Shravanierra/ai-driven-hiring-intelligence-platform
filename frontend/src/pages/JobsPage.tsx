@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
-import PageBackground from '../components/PageBackground';
-import bgJobs from '../assets/bg-jobs.svg';
 import { FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface Criterion {
   label: string;
@@ -185,8 +184,9 @@ export default function JobsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <PageBackground src={bgJobs} />
-      <h1 className="text-2xl font-bold text-gray-800">Job Descriptions</h1>
+      {status === 'uploading' && <LoadingOverlay message="Uploading job description…" />}
+      {status === 'polling'   && <LoadingOverlay message="Parsing with AI — this may take a moment…" />}
+      <h1 className="text-2xl font-bold text-white text-center">Job Descriptions</h1>
 
       {/* Uploaded JDs list */}
       {jobs.length > 0 && (

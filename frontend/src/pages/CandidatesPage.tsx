@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import { useJob } from '../context/JobContext';
-import PageBackground from '../components/PageBackground';
-import bgCandidates from '../assets/bg-candidates.svg';
-import { BriefcaseBusiness } from 'lucide-react';
 import JdSwitcher from '../components/JdSwitcher';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface BreakdownItem {
   criterion_label: string;
@@ -45,10 +43,8 @@ export default function CandidatesPage() {
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load all JDs for the switcher
-  useEffect(() => {
-    api.get('/jobs').then(({ data }) => setJobs(Array.isArray(data) ? data : [])).catch(() => {});
-  }, []);
+  // Load all JDs for the switcher — handled by JdSwitcher internally
+  useEffect(() => {}, []);
 
   const loadCandidates = useCallback(async () => {
     if (!jobId) return;
@@ -111,7 +107,6 @@ export default function CandidatesPage() {
   if (!jobId) {
     return (
       <div className="max-w-4xl mx-auto pt-8">
-        <PageBackground src={bgCandidates} />
         <JdSwitcher />
       </div>
     );
@@ -119,12 +114,13 @@ export default function CandidatesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <PageBackground src={bgCandidates} />
+      {uploading && <LoadingOverlay message="Uploading and parsing resumes…" />}
+      {loading   && <LoadingOverlay message="Loading candidates…" />}
 
       {/* JD switcher */}
       <JdSwitcher />
 
-      <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
+      <h1 className="text-2xl font-bold text-white text-center">Candidates</h1>
 
       {/* Resume upload zone */}
       <div
@@ -161,7 +157,6 @@ export default function CandidatesPage() {
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      {loading && <p className="text-gray-500 text-sm">Loading candidates…</p>}
 
       {!loading && candidates.length === 0 && (
         <p className="text-center text-gray-400 py-10 text-sm">
