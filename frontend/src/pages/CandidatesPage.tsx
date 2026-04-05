@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import JdSwitcher from '../components/JdSwitcher';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { useToast } from '../components/Toast';
 
 interface BreakdownItem {
   criterion_label: string;
@@ -32,10 +33,10 @@ interface Candidate {
 
 export default function CandidatesPage() {
   const { jobId } = useJob();
+  const { showError, showSuccess } = useToast();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [error, setError] = useState('');
 
   // Upload state
   const [uploading, setUploading] = useState(false);
@@ -49,7 +50,6 @@ export default function CandidatesPage() {
   const loadCandidates = useCallback(async () => {
     if (!jobId) return;
     setLoading(true);
-    setError('');
     try {
       const { data } = await api.get(`/jobs/${jobId}/candidates`);
       const list: Candidate[] = Array.isArray(data) ? data : [];
@@ -68,7 +68,7 @@ export default function CandidatesPage() {
       );
       setCandidates(enriched);
     } catch {
-      setError('Failed to load candidates');
+      showError('Failed to load candidates');
     } finally {
       setLoading(false);
     }
@@ -90,9 +90,14 @@ export default function CandidatesPage() {
         added: (data.profiles ?? []).length,
         failed: (data.failures ?? []).length,
       });
+      if ((data.failures ?? []).length > 0) {
+        showError(`${data.failures.length} resume(s) failed to parse`);
+      } else {
+        showSuccess(`${(data.profiles ?? []).length} resume(s) uploaded successfully`);
+      }
       await loadCandidates();
     } catch {
-      setError('Resume upload failed');
+      showError('Resume upload failed');
     } finally {
       setUploading(false);
     }
@@ -155,8 +160,6 @@ export default function CandidatesPage() {
           </p>
         )}
       </div>
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {!loading && candidates.length === 0 && (
         <p className="text-center text-gray-400 py-10 text-sm">

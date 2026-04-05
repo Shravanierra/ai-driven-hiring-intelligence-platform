@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import JdSwitcher from '../components/JdSwitcher';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { useToast } from '../components/Toast';
 
 interface ShortlistEntry {
   candidateId: string;
@@ -21,10 +22,10 @@ interface Filters {
 
 export default function ShortlistPage() {
   const { jobId } = useJob();
+  const { showError } = useToast();
   const [entries, setEntries] = useState<ShortlistEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState('');
   const [size, setSize] = useState(10);
   const [filters, setFilters] = useState<Filters>({ minScore: '', minExperience: '', requiredSkill: '' });
 
@@ -46,7 +47,7 @@ export default function ShortlistPage() {
       );
       setEntries(enriched);
     } catch {
-      setError('Failed to load shortlist');
+      showError('Failed to load shortlist');
     } finally {
       setLoading(false);
     }
@@ -57,7 +58,6 @@ export default function ShortlistPage() {
   const generate = async () => {
     if (!jobId) return;
     setGenerating(true);
-    setError('');
     const body: Record<string, any> = { size };
     const f: Record<string, any> = {};
     if (filters.minScore) f.min_score = Number(filters.minScore);
@@ -68,7 +68,7 @@ export default function ShortlistPage() {
       await api.post(`/jobs/${jobId}/shortlist`, body);
       await loadShortlist();
     } catch {
-      setError('Failed to generate shortlist');
+      showError('Failed to generate shortlist');
     } finally {
       setGenerating(false);
     }
@@ -82,7 +82,7 @@ export default function ShortlistPage() {
         prev.map((e) => (e.candidateId === candidateId ? { ...e, decision } : e)),
       );
     } catch (err: any) {
-      setError(`Failed to update decision: ${err.response?.data?.message ?? err.message}`);
+      showError(`Failed to update decision: ${err.response?.data?.message ?? err.message}`);
     }
   };
 
@@ -155,8 +155,6 @@ export default function ShortlistPage() {
           {generating ? 'Generating…' : 'Generate Shortlist'}
         </button>
       </div>
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {/* Ranked list */}
       {entries.length > 0 && (

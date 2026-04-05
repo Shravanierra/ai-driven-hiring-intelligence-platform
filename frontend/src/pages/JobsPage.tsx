@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import { FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { useToast } from '../components/Toast';
 
 interface Criterion {
   label: string;
@@ -30,8 +31,8 @@ type UploadStatus = 'idle' | 'uploading' | 'polling' | 'parsed' | 'error';
 
 export default function JobsPage() {
   const { jobId, setJob } = useJob();
+  const { showError, showSuccess } = useToast();
   const [status, setStatus] = useState<UploadStatus>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
   const [dragging, setDragging] = useState(false);
   const [criteria, setCriteria] = useState<Criteria | null>(null);
   const [saving, setSaving] = useState(false);
@@ -77,12 +78,12 @@ export default function JobsPage() {
         } else if (data.status === 'error') {
           stopPolling();
           setStatus('error');
-          setErrorMsg(data.error_message || 'Parsing failed');
+          showError(data.error_message || 'Parsing failed');
         }
       } catch {
         stopPolling();
         setStatus('error');
-        setErrorMsg('Failed to check job status');
+        showError('Failed to check job status');
       }
     }, 2000);
   };
@@ -107,7 +108,7 @@ export default function JobsPage() {
       loadJobs();
     } catch (err: any) {
       setStatus('error');
-      setErrorMsg(err.response?.data?.detail || 'Upload failed');
+      showError(err.response?.data?.detail || 'Upload failed');
     }
   };
 
@@ -153,8 +154,9 @@ export default function JobsPage() {
     try {
       await api.put(`/jobs/${jobId}/criteria`, criteria);
       setSaved(true);
+      showSuccess('Criteria saved successfully');
     } catch {
-      setErrorMsg('Failed to save criteria');
+      showError('Failed to save criteria');
     } finally {
       setSaving(false);
     }
@@ -165,7 +167,6 @@ export default function JobsPage() {
     setJob(id, job?.title ?? null);
     setCriteria(null);
     setStatus('idle');
-    setErrorMsg('');
     setSaved(false);
     try {
       const { data: crit } = await api.get(`/jobs/${id}/criteria`);
@@ -244,7 +245,6 @@ export default function JobsPage() {
       {/* Status */}
       {status === 'uploading' && <StatusBadge color="blue" text="Uploading…" />}
       {status === 'polling' && <StatusBadge color="yellow" text="Parsing job description…" />}
-      {status === 'error' && <StatusBadge color="red" text={`Error: ${errorMsg}`} />}
       {status === 'parsed' && !criteria && <StatusBadge color="green" text="Parsed — loading criteria…" />}
 
       {/* Criteria editor */}

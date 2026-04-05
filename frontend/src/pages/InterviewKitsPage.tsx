@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useJob } from '../context/JobContext';
 import JdSwitcher from '../components/JdSwitcher';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { useToast } from '../components/Toast';
 
 interface Rubric {
   strong: string;
@@ -31,6 +32,7 @@ interface Candidate {
 
 export default function InterviewKitsPage() {
   const { jobId } = useJob();
+  const { showError, showSuccess } = useToast();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [kit, setKit] = useState<InterviewKit | null>(null);
@@ -39,7 +41,6 @@ export default function InterviewKitsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!jobId) return;
@@ -50,7 +51,6 @@ export default function InterviewKitsPage() {
     if (!jobId) return;
     setLoading(true);
     setKit(null);
-    setError('');
     try {
       const { data } = await api.get(`/jobs/${jobId}/candidates/${candidateId}/interview-kit`);
       setKit(data);
@@ -58,7 +58,7 @@ export default function InterviewKitsPage() {
       if (err.response?.status === 404) {
         setKit(null);
       } else {
-        setError('Failed to load interview kit');
+        showError('Failed to load interview kit');
       }
     } finally {
       setLoading(false);
@@ -74,14 +74,13 @@ export default function InterviewKitsPage() {
   const generateKit = async () => {
     if (!jobId || !selectedCandidate) return;
     setGenerating(true);
-    setError('');
     try {
       const { data } = await api.post(
         `/jobs/${jobId}/candidates/${selectedCandidate}/interview-kit`,
       );
       setKit(data);
     } catch {
-      setError('Failed to generate interview kit');
+      showError('Failed to generate interview kit');
     } finally {
       setGenerating(false);
     }
@@ -124,8 +123,9 @@ export default function InterviewKitsPage() {
         questions: kit.questions,
       });
       setSaved(true);
+      showSuccess('Interview kit saved');
     } catch {
-      setError('Failed to save interview kit');
+      showError('Failed to save interview kit');
     } finally {
       setSaving(false);
     }
@@ -146,7 +146,7 @@ export default function InterviewKitsPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      setError('Failed to export PDF');
+      showError('Failed to export PDF');
     } finally {
       setExporting(false);
     }
@@ -183,8 +183,6 @@ export default function InterviewKitsPage() {
           ))}
         </select>
       </div>
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {selectedCandidate && !kit && !loading && !generating && (
         <div className="text-center py-10">

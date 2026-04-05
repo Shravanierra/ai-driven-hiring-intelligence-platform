@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { useToast } from '../components/Toast';
 
 interface CandidateResult {
   id: string;
@@ -23,8 +24,8 @@ export default function AssistantPage() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { showError } = useToast();
 
   // Create session on mount
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function AssistantPage() {
       };
       setTurns((prev) => [...prev, turn]);
     } catch {
-      setError('Failed to submit query');
+      showError('Failed to submit query');
     } finally {
       setLoading(false);
     }
@@ -99,7 +100,6 @@ export default function AssistantPage() {
 
       {/* Input */}
       <div className="mt-4 border-t border-gray-200 pt-4">
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <div className="flex gap-3">
           <textarea
             value={query}
