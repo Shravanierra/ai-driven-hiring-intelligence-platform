@@ -90,7 +90,6 @@ export default function JobsPage() {
 
   const uploadFile = async (file: File) => {
     setStatus('uploading');
-    setErrorMsg('');
     setCriteria(null);
     setSaved(false);
     const form = new FormData();
